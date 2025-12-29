@@ -172,40 +172,63 @@ app.get('/Accueil.html', (req, res) => {
 
 app.post('/api/register', async (req, res) => {
   try {
-    const username = (req.body.teamName || '').trim();
+    // 1. Récupération des données (on utilise 'username' car c'est ce que ton HTML envoie)
+    const username = (req.body.username || '').trim();
     const password = (req.body.password || '').trim();
 
+    // 2. Validation de sécurité : champs vides
     if (!username || !password) {
-      return res.status(400).json({ success: false, message: "Champs manquants" });
+      return res.status(400).json({ 
+        success: false, 
+        message: "Veuillez remplir tous les champs." 
+      });
     }
 
-    // Vérifier si l'utilisateur existe déjà
+    // 3. Validation de sécurité : longueur du mot de passe
+    if (password.length < 6) {
+      return res.status(400).json({ 
+        success: false, 
+        message: "Le mot de passe doit contenir au moins 6 caractères." 
+      });
+    }
+
+    // 4. Vérifier si le nom d'utilisateur existe déjà en base
+    // Note : assure-toi que ta colonne s'appelle bien 'nom_utilisateur'
     const exist = await query(
       "SELECT id FROM utilisateurs WHERE nom_utilisateur = ?",
       [username]
     );
 
     if (exist.length > 0) {
-      return res.status(409).json({
-        success: false,
-        message: "Nom d'utilisateur déjà utilisé"
+      return res.status(409).json({ 
+        success: false, 
+        message: "Ce nom d'équipe est déjà utilisé." 
       });
     }
 
-    // Hachage du mot de passe
+    // 5. Hachage du mot de passe avec bcrypt (10 tours de "salt")
     const hashedPassword = await bcrypt.hash(password, 10);
 
-    // Insertion utilisateur sécurisé
+    // 6. Insertion du nouvel utilisateur
     await query(
-      "INSERT INTO utilisateurs (nom_utilisateur, mot_de_passe) VALUES (?, ?)",
-      [username, hashedPassword]
+      "INSERT INTO utilisateurs (nom_utilisateur, mot_de_passe, role) VALUES (?, ?, ?)",
+      [username, hashedPassword, 'user']
     );
 
-    res.json({ success: true, message: "Compte créé avec succès" });
+    // 7. Réponse de succès
+    res.status(201).json({ 
+      success: true, 
+      message: "Compte créé avec succès !" 
+    });
 
   } catch (err) {
-    console.error("Erreur register:", err);
-    res.status(500).json({ success: false, message: "Erreur lors de la création du compte" });
+    // Log de l'erreur précise pour le debug dans Railway
+    console.error("Détail de l'erreur d'inscription :", err);
+    
+    res.status(500).json({ 
+      success: false, 
+      message: "Une erreur technique est survenue sur le serveur." 
+    });
   }
 });
 
