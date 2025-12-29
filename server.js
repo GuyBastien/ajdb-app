@@ -120,37 +120,38 @@ app.get('/', (req, res) => {
 // 2. Route pour traiter le formulaire 
 
 
+const bcrypt = require('bcrypt');
+
 app.post('/api/login', async (req, res) => {
-    try {
-        const { username, password } = req.body;
-        
-        // On utilise la fonction query (avec Promise) définie plus haut dans ton code
-        const rows = await query(
-            'SELECT * FROM utilisateurs WHERE nom_utilisateur = ? AND mot_de_passe = ?', 
-            [username, password]
-        );
+  try {
+    const { username, password } = req.body;
+    const rows = await query("SELECT id, nom_utilisateur, role, mot_de_passe FROM utilisateurs WHERE nom_utilisateur = ?", [username]);
 
-        if (rows && rows.length > 0) {
-            const user = rows[0];
-            req.session.user = {
-                id: user.id || user.Id_utilisateur || 1,
-                username: user.nom_utilisateur,
-                role: user.role || 'admin' 
-            };
-
-            res.json({ 
-                success: true, 
-                role: req.session.user.role,
-                redirect: 'Accueil.html' 
-            });
-        } else {
-            res.status(401).json({ success: false, message: "Identifiants incorrects." });
-        }
-    } catch (err) {
-        console.error("ERREUR CRITIQUE LOGIN:", err);
-        res.status(500).json({ success: false, message: "Erreur technique : " + err.message });
+    if (rows.length === 0) {
+      return res.status(401).json({ success: false, message: "Identifiants incorrects." });
     }
+
+    // Comparaison sécurisée
+    const match = await bcrypt.compare(password, rows[0].mot_de_passe);
+    if (!match) {
+      return res.status(401).json({ success: false, message: "Identifiants incorrects." });
+    }
+
+    // Connexion OK, on enregistre la session
+    req.session.user = {
+      id: rows[0].id,
+      username: rows[0].nom_utilisateur,
+      role: rows[0].role
+    };
+
+    res.json({ success: true, role: rows[0].role, redirect: 'Accueil.html' });
+
+  } catch (err) {
+    console.error("Erreur login:", err);
+    res.status(500).json({ message: "Erreur serveur" });
+  }
 });
+
 
 
 app.get('/api/logout', (req, res) => {
@@ -163,10 +164,12 @@ app.get('/Accueil.html', (req, res) => {
   res.sendFile(path.join(__dirname, 'Accueil.html'));
 });
 
+const bcrypt = require('bcrypt');
+
 app.post('/api/register', async (req, res) => {
   try {
-    const username = req.body.teamName;  // <-- récupère teamName
-    const password = req.body.password;
+    const username = (req.body.teamName || '').trim();
+    const password = (req.body.password || '').trim();
 
     if (!username || !password) {
       return res.status(400).json({ success: false, message: "Champs manquants" });
@@ -179,13 +182,19 @@ app.post('/api/register', async (req, res) => {
     );
 
     if (exist.length > 0) {
-      return res.status(409).json({ success: false, message: "Nom d'utilisateur déjà utilisé" });
+      return res.status(409).json({
+        success: false,
+        message: "Nom d'utilisateur déjà utilisé"
+      });
     }
 
-    // Insertion utilisateur NORMAL
+    // Hachage du mot de passe
+    const hashedPassword = await bcrypt.hash(password, 10);
+
+    // Insertion utilisateur sécurisé
     await query(
       "INSERT INTO utilisateurs (nom_utilisateur, mot_de_passe) VALUES (?, ?)",
-      [username, password]
+      [username, hashedPassword]
     );
 
     res.json({ success: true, message: "Compte créé avec succès" });
@@ -195,6 +204,7 @@ app.post('/api/register', async (req, res) => {
     res.status(500).json({ success: false, message: "Erreur lors de la création du compte" });
   }
 });
+
 
 
 /* ------------------ EQUIPES ------------------ */

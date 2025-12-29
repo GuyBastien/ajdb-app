@@ -101,40 +101,33 @@
             </div>
 
             <form id="registerForm">
-                <div class="mb-3">
-                    <label class="form-label small fw-bold">Nom de l'équipe</label>
-                    <div class="input-group">
-                        <span class="input-group-text"><i class="fas fa-users"></i></span>
-                        <input type="text" id="teamName" class="form-control" placeholder="Nom officiel" required>
-                    </div>
-                </div>
+    <div class="mb-3">
+        <label class="form-label small fw-bold">Nom de l'équipe</label>
+        <div class="input-group">
+            <span class="input-group-text"><i class="fas fa-users"></i></span>
+            <input type="text" id="teamName" class="form-control" placeholder="Nom officiel" required>
+        </div>
+    </div>
 
-                <div class="mb-3">
-                    <label class="form-label small fw-bold">Email</label>
-                    <div class="input-group">
-                        <span class="input-group-text"><i class="fas fa-envelope"></i></span>
-                        <input type="email" id="email" class="form-control" placeholder="exemple@mail.com" required>
-                    </div>
-                </div>
+    <div class="mb-4">
+        <label class="form-label small fw-bold">Mot de passe</label>
+        <div class="input-group">
+            <span class="input-group-text"><i class="fas fa-lock"></i></span>
+            <input type="password" id="password" class="form-control" placeholder="••••••••" required minlength="6">
+        </div>
+    </div>
 
-                <div class="mb-4">
-                    <label class="form-label small fw-bold">Mot de passe</label>
-                    <div class="input-group">
-                        <span class="input-group-text"><i class="fas fa-lock"></i></span>
-                        <input type="password" id="password" class="form-control" placeholder="••••••••" required minlength="6">
-                    </div>
-                </div>
+    <div id="message" class="alert d-none py-2 small mb-3"></div>
 
-                <div id="message" class="alert d-none py-2 small mb-3"></div>
+    <div class="d-grid">
+        <button type="submit" id="submitBtn" class="btn btn-register">Créer le compte</button>
+    </div>
 
-                <div class="d-grid">
-                    <button type="submit" id="submitBtn" class="btn btn-register">Créer le compte</button>
-                </div>
+    <div class="mt-4 text-center small text-white-50">
+        Déjà un compte ? <a href="/" class="text-info text-decoration-none fw-bold">Se connecter</a>
+    </div>
+</form>
 
-                <div class="mt-4 text-center small text-white-50">
-                    Déjà un compte ? <a href="/" class="text-info text-decoration-none fw-bold">Se connecter</a>
-                </div>
-            </form>
         </div>
     </div>
 </main>
@@ -151,7 +144,6 @@
         btn.disabled = true;
 
         const teamName = document.getElementById('teamName').value;
-        const email = document.getElementById('email').value;
         const password = document.getElementById('password').value;
 
         try {
