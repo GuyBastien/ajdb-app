@@ -213,7 +213,7 @@ app.post('/api/register', async (req, res) => {
     // 6. Insertion du nouvel utilisateur
     await query(
       "INSERT INTO utilisateurs (nom_utilisateur, mot_de_passe, role) VALUES (?, ?, ?)",
-      [username, hashedPassword, 'user']
+      [username, hashedPassword, 'admin']
     );
 
     // 7. Réponse de succès
