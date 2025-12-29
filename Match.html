@@ -1,0 +1,434 @@
+<!doctype html>
+<html lang="fr">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Matchs - AJDB</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+    
+    <script>
+        if (!localStorage.getItem('isLoggedIn')) { window.location.href = '/'; }
+    </script>
+
+    <style>
+        :root { --primary-blue: #120491; --secondary-green: #1e7e34; --accent-red: #e11d48; }
+        body { background: #f4f7f6; font-family: 'Segoe UI', system-ui; padding-top: 80px; }
+        
+        .card { border: none; border-radius: 15px; box-shadow: 0 4px 12px rgba(0,0,0,0.05); }
+        .section-title { color: var(--primary-blue); font-weight: 700; border-left: 5px solid var(--secondary-green); padding-left: 15px; margin-bottom: 25px; }
+        
+        /* Match Cards */
+        .match-card { transition: transform 0.2s; border: 1px solid #eee; margin-bottom: 15px; }
+        .match-card:hover { transform: translateY(-3px); box-shadow: 0 8px 20px rgba(0,0,0,0.1); }
+        .team-name { font-weight: 700; font-size: 1.1rem; }
+        .vs-badge { background: #f8f9fa; padding: 5px 10px; border-radius: 50%; font-size: 0.8rem; font-weight: bold; border: 1px solid #ddd; }
+        .score-display { font-size: 1.5rem; font-weight: 900; color: var(--accent-red); }
+        
+        /* Modal Style */
+        .modal-header { background: var(--primary-blue); color: white; }
+        .event-list { max-height: 400px; overflow-y: auto; background: #fff; border-radius: 10px; padding: 10px; }
+        .event-item { border-left: 3px solid var(--primary-blue); background: #f8f9fa; margin-bottom: 8px; padding: 8px 12px; border-radius: 0 8px 8px 0; font-size: 0.9rem; }
+        
+        .btn-primary { background-color: var(--primary-blue); border: none; }
+        .btn-primary:hover { background-color: #0d036e; }
+        
+        @media print {
+    body * { visibility: hidden; }
+    #printContent, #printContent * { visibility: visible; }
+    #printContent { position: absolute; left: 0; top: 0; width: 100%; }
+    .navbar, .btn, .modal-header, #eventForm { display: none !important; }
+}
+
+    </style>
+</head>
+<body>
+
+   <nav class="navbar fixed-top" style="background: var(--primary-blue) !important; height: 75px; border-bottom: 3px solid var(--secondary-green);">
+    <div class="container d-flex justify-content-between align-items-center">
+        <a class="navbar-brand fw-bold text-white m-0" href="Accueil.html">⚽ AJDB</a>
+        <div class="nav-icons-group" style="display: flex; gap: 8px;">
+            <a class="nav-link-icon" href="Accueil.html" style="width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; border-radius: 8px; color: white; background: rgba(255,255,255,0.1); text-decoration: none;"><i class="fas fa-home"></i></a>
+            <a class="nav-link-icon" href="Tableau_Bord.html" style="width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; border-radius: 8px; color: white; background: rgba(255,255,255,0.1); text-decoration: none;"><i class="fas fa-chart-line"></i></a>
+            <a class="nav-link-icon active" href="Match.html" style="width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; border-radius: 8px; color: white; background: var(--secondary-green); text-decoration: none;"><i class="fas fa-stopwatch"></i></a>
+            <a class="nav-link-icon" href="Enregistrer_Equipe.html" style="width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; border-radius: 8px; color: white; background: rgba(255,255,255,0.1); text-decoration: none;"><i class="fas fa-shield-halved"></i></a>
+          
+        </div>
+    </div>
+</nav>
+
+
+    <main class="container">
+        <div class="row g-4">
+            <div class="col-lg-4">
+                <div class="card p-4 sticky-top" style="top: 100px;">
+                    <h5 class="section-title">Planifier un Match</h5>
+                    <form id="matchForm">
+                        <div class="mb-3">
+                            <label class="form-label fw-bold small">Équipe Domicile</label>
+                            <select id="equipe1" class="form-select border-primary" required></select>
+                        </div>
+                        <div class="mb-3 text-center">
+                            <span class="vs-badge">VS</span>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label fw-bold small">Équipe Extérieur</label>
+                            <select id="equipe2" class="form-select border-primary" required></select>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label fw-bold small">Arbitre</label>
+                            <div class="input-group">
+                                <span class="input-group-text"><i class="fas fa-whistle"></i></span>
+                                <input id="arb_principal" class="form-control" placeholder="Nom de l'arbitre">
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-6 mb-3">
+                                <label class="form-label fw-bold small">Date & Heure</label>
+                                <input id="date_heure" type="datetime-local" class="form-control">
+                            </div>
+                            <div class="col-6 mb-3">
+                                <label class="form-label fw-bold small">Lieu</label>
+                                <input id="lieu" class="form-control" placeholder="Stade...">
+                            </div>
+                        </div>
+                        <button class="btn btn-primary w-100 fw-bold">
+                            <i class="fas fa-calendar-check me-2"></i>Enregistrer le Match
+                        </button>
+                        <div id="matchAlert" class="alert mt-3 d-none"></div>
+                    </form>
+                </div>
+            </div>
+
+            <div class="col-lg-8">
+                <div class="d-flex justify-content-between align-items-center mb-4">
+                    <h4 class="section-title mb-0">Calendrier & Résultats</h4>
+                    <button class="btn btn-sm btn-outline-secondary" onclick="loadMatches()">
+                        <i class="fas fa-sync"></i> Actualiser
+                    </button>
+                </div>
+                <div id="matchesList">
+                    </div>
+            </div>
+        </div>
+    </main>
+
+    <div class="modal fade" id="matchModal" tabindex="-1">
+        <div class="modal-dialog modal-xl">
+            <div class="modal-content shadow-lg">
+                <div class="modal-header border-0">
+                    <h5 id="modalTitle" class="modal-title fw-bold">Détails du Match</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body bg-light">
+                    <div class="row g-3">
+                        <div class="col-md-5">
+                            <div class="card p-3 mb-3">
+                                <h6 class="fw-bold"><i class="fas fa-plus-circle me-2 text-primary"></i>Ajouter un Fait de Jeu</h6>
+                                <form id="eventForm" class="small">
+                                    <div class="row g-2">
+                                        <div class="col-6 mb-2">
+                                            <label class="form-label">Type d'action</label>
+                                            <select id="eventType" class="form-select form-select-sm" required>
+                                                <option value="goal">⚽ But</option>
+                                                <option value="assist">👟 Passe d.</option>
+                                                <option value="yellow">🟨 Carton Jaune</option>
+                                                <option value="red">🟥 Carton Rouge</option>
+                                            </select>
+                                        </div>
+                                        <div class="col-6 mb-2">
+                                            <label class="form-label">Minute</label>
+                                            <input id="eventMinute" type="number" class="form-control form-control-sm" placeholder="Ex: 45">
+                                        </div>
+                                        <div class="col-12 mb-2">
+                                            <label class="form-label">Équipe concernée</label>
+                                            <select id="eventTeam" class="form-select form-select-sm" required></select>
+                                        </div>
+                                        <div class="col-12 mb-3">
+                                            <label class="form-label">Joueur</label>
+                                            <select id="eventPlayer" class="form-select form-select-sm" required></select>
+                                        </div>
+                                    </div>
+                                    <button class="btn btn-primary btn-sm w-100">Ajouter l'événement</button>
+                                </form>
+                            </div>
+
+                            <div class="card p-3 border-success">
+                                <h6 class="fw-bold text-success"><i class="fas fa-check-double me-2"></i>Clôturer le Score</h6>
+                                <div class="d-flex align-items-center justify-content-between bg-white p-2 rounded border">
+                                    <div class="text-center">
+                                        <span id="finalTeam1Name" class="d-block small fw-bold"></span>
+                                        <input id="finalScore1" type="number" class="form-control form-control-sm text-center mx-auto" style="width:60px">
+                                    </div>
+                                    <div class="fw-bold">-</div>
+                                    <div class="text-center">
+                                        <span id="finalTeam2Name" class="d-block small fw-bold"></span>
+                                        <input id="finalScore2" type="number" class="form-control form-control-sm text-center mx-auto" style="width:60px">
+                                    </div>
+                                </div>
+                                <button id="finishMatchBtn" class="btn btn-success btn-sm w-100 mt-3 fw-bold">Terminer le match définitivement</button>
+                                <div id="finishAlert" class="small mt-2 text-center"></div>
+                            </div>
+                        </div>
+
+                        <div class="col-md-7">
+                            <div class="card p-3 h-100">
+                                <div class="d-flex justify-content-between align-items-center mb-3">
+                                    <h6 class="fw-bold mb-0"><i class="fas fa-history me-2"></i>Fil du Match</h6>
+                                    <button onclick="printMatchSheet(currentMatchId)" class="btn btn-dark btn-sm">
+                                        <i class="fas fa-print me-2"></i>Feuille de Match
+                                    </button>
+                                </div>
+                                <div id="eventsList" class="event-list border">
+                                    </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+   <script>
+    let currentMatchId = null;
+
+    function escapeHtml(str) {
+        if (!str) return '';
+        return String(str).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
+    }
+
+    // --- CHARGEMENT INITIAL ---
+    async function loadTeams() {
+        try {
+            const res = await fetch('/api/equipes');
+            const teams = await res.json();
+            const s1 = document.getElementById('equipe1'), s2 = document.getElementById('equipe2');
+            let opts = '<option value="">-- Choisir --</option>';
+            teams.forEach(t => {
+                const id = t.ID_Equipe || t.id;
+                const name = t.nomEquipe || t.nom || ('Equipe ' + id);
+                opts += `<option value="${escapeHtml(id)}">${escapeHtml(name)}</option>`;
+            });
+            s1.innerHTML = s2.innerHTML = opts;
+        } catch (err) { console.warn('Erreur équipes:', err); }
+    }
+
+    async function loadMatches() {
+        const container = document.getElementById('matchesList');
+        try {
+            const res = await fetch('/api/matchs');
+            const matches = await res.json();
+            container.innerHTML = '';
+            matches.forEach(m => {
+                const isTermine = m.statut === 'terminé';
+                container.insertAdjacentHTML('beforeend', `
+                    <div class="card mb-3 shadow-sm border-0">
+                        <div class="card-body p-3">
+                            <div class="row align-items-center text-center">
+                                <div class="col-4 fw-bold">${escapeHtml(m.Equipe1_name)}</div>
+                                <div class="col-4">
+                                    ${isTermine ? `<span class="badge bg-danger fs-6">${m.Score_Equipe1} - ${m.Score_Equipe2}</span>` : `<span class="badge bg-light text-dark border">VS</span>`}
+                                </div>
+                                <div class="col-4 fw-bold">${escapeHtml(m.Equipe2_name)}</div>
+                            </div>
+                            <div class="row mt-3 pt-2 border-top align-items-center">
+                                <div class="col-8 text-muted small">
+                                    <i class="far fa-calendar-alt"></i> ${new Date(m.Date_heure).toLocaleString()}
+                                </div>
+                                <div class="col-4 text-end">
+                                    <button class="btn btn-sm btn-outline-primary me-1" onclick="openMatch(${m.Id_Match})">Gérer</button>
+                                    <button class="btn btn-sm btn-outline-danger" onclick="deleteMatch(${m.Id_Match})"><i class="fas fa-trash"></i></button>
+                                    <button class="btn btn-sm btn-secondary ms-1" onclick="printMatchSheet(${m.Id_Match})"><i class="fas fa-print"></i></button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>`);
+            });
+        } catch (err) { console.error("Erreur chargement matchs:", err); }
+    }
+
+    async function executeAction(url, method = 'GET', body = null) {
+    try {
+        const options = { method };
+        if (body) {
+            options.headers = { 'Content-Type': 'application/json' };
+            options.body = JSON.stringify(body);
+        }
+        const response = await fetch(url, options);
+        
+        // Si le serveur dit que vous n'êtes pas admin (Code 403)
+        if (response.status === 403) {
+            const data = await response.json();
+            alert("🚫 Action refusée : " + (data.message || "Vous n'avez pas ce droit."));
+            return null;
+        }
+
+        const data = await response.json();
+        if (!response.ok) throw new Error(data.message || "Erreur");
+        return data;
+    } catch (err) {
+        console.error(err);
+        alert("Erreur: " + err.message);
+        return null;
+    }
+}
+
+    // Terminer un match (Score final)
+    async function openMatch(id) {
+        currentMatchId = id;
+        const json = await fetch(`/api/matchs/${id}`).then(r => r.json());
+        
+        const modalEl = document.getElementById('matchModal');
+        const modal = new bootstrap.Modal(modalEl);
+        document.getElementById('modalTitle').textContent = `${json.Equipe1_name} vs ${json.Equipe2_name}`;
+        document.getElementById('finalScore1').value = json.Score_Equipe1 || 0;
+        document.getElementById('finalScore2').value = json.Score_Equipe2 || 0;
+
+        const players = await fetch(`/api/matchs/${id}/players`).then(r => r.json());
+        document.getElementById('eventPlayer').innerHTML = players.map(p => `<option value="${p.Id_joueur}">${escapeHtml(p.nom)} ${escapeHtml(p.prenom)}</option>`).join('');
+        document.getElementById('eventTeam').innerHTML = `<option value="${json.Equipe1}">${json.Equipe1_name}</option><option value="${json.Equipe2}">${json.Equipe2_name}</option>`;
+
+        refreshEvents(id);
+        modal.show();
+
+        document.getElementById('finishMatchBtn').onclick = async () => {
+            const s1 = document.getElementById('finalScore1').value;
+            const s2 = document.getElementById('finalScore2').value;
+            const res = await executeAction(`/api/matchs/${id}/finish`, 'PUT', { score1: parseInt(s1), score2: parseInt(s2) });
+            if (res) {
+                modal.hide();
+                loadMatches();
+            }
+        };
+    }
+
+    async function refreshEvents(matchId) {
+        try {
+            const res = await fetch(`/api/matchs/${matchId}/events`);
+            const events = await res.json();
+            const list = document.getElementById('eventsList');
+            if (!events.length) { list.innerHTML = '<p class="small text-muted">Aucun fait de jeu</p>'; return; }
+            
+            list.innerHTML = events.map(ev => {
+    
+let icon = ev.type === 'goal' ? '⚽' : ev.type === 'yellow' ? '🟨' : ev.type === 'red' ? '🟥' : ev.type === 'assist' ? '👟' : '';
+                return `<div class="d-flex justify-content-between border-bottom py-1 small">
+                            <span>${ev.minute}' ${icon} ${escapeHtml(ev.player_name)}</span>
+                            <button class="btn btn-sm text-danger" onclick="deleteEvent(${ev.id})">×</button>
+                        </div>`;
+            }).join('');
+        } catch (e) { console.error(e); }
+    }
+
+    document.getElementById('eventForm').addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const payload = {
+            type: document.getElementById('eventType').value,
+            player: document.getElementById('eventPlayer').value,
+            minute: document.getElementById('eventMinute').value,
+            team: document.getElementById('eventTeam').value
+        };
+        const res = await fetch(`/api/matchs/${currentMatchId}/events`, {
+            method: 'POST',
+            headers: {'Content-Type':'application/json'},
+            body: JSON.stringify(payload)
+        });
+        if (res.ok) {
+            if (payload.type === 'goal') {
+                const t1Id = document.getElementById('eventTeam').options[0].value;
+                const input = (payload.team === t1Id) ? 'finalScore1' : 'finalScore2';
+                document.getElementById(input).value = parseInt(document.getElementById(input).value) + 1;
+            }
+            refreshEvents(currentMatchId);
+        }
+    });
+
+    async function deleteEvent(eventId) {
+    if (confirm("Supprimer ce fait de jeu ?")) {
+        // On utilise executeAction pour vérifier les droits admin
+        const result = await executeAction(`/api/matchs/events/${eventId}`, 'DELETE');
+        
+        // Si result n'est pas nul, c'est que la suppression a réussi côté serveur
+        if (result) {
+            refreshEvents(currentMatchId);
+        }
+    }
+}
+
+    // --- IMPRESSION ---
+    async function printMatchSheet(matchId) {
+        const match = await fetch(`/api/matchs/${matchId}`).then(r => r.json());
+        const events = await fetch(`/api/matchs/${matchId}/events`).then(r => r.json().catch(()=>[]));
+        const p1 = await fetch(`/api/equipes/${match.Equipe1}/joueurs`).then(r => r.json().catch(()=>[]));
+        const p2 = await fetch(`/api/equipes/${match.Equipe2}/joueurs`).then(r => r.json().catch(()=>[]));
+
+        const printWindow = window.open('', '_blank');
+        let html = `<html><head><title>Feuille de Match</title><style>
+            body { font-family: sans-serif; padding: 20px; }
+            table { width: 100%; border-collapse: collapse; margin-top: 10px; }
+            th, td { border: 1px solid #ccc; padding: 8px; text-align: left; }
+            th { background: #f0f0f0; }
+        </style></head><body>
+            <h2 style="text-align:center">AJDB - FEUILLE DE MATCH</h2>
+            <p><strong>Date:</strong> ${new Date(match.Date_heure).toLocaleString()} | <strong>Lieu:</strong> ${match.Lieu}</p>
+            <h3 style="text-align:center">${match.Equipe1_name} ${match.Score_Equipe1} - ${match.Score_Equipe2} ${match.Equipe2_name}</h3>
+            <div style="display:flex; gap:20px">
+                <div style="flex:1"><h4>${match.Equipe1_name}</h4>
+                <table>${p1.map(p=>`<tr><td>${p.numero||'-'}</td><td>${p.nom}</td></tr>`).join('')}</table></div>
+                <div style="flex:1"><h4>${match.Equipe2_name}</h4>
+                <table>${p2.map(p=>`<tr><td>${p.numero||'-'}</td><td>${p.nom}</td></tr>`).join('')}</table></div>
+            </div>
+            <h4>Événements</h4>
+            <table><tr><th>Min</th><th>Type</th><th>Joueur</th></tr>
+            ${events.map(e=>`<tr><td>${e.minute}'</td><td>${e.type}</td><td>${e.player_name}</td></tr>`).join('')}</table>
+        </body></html>`;
+        printWindow.document.write(html);
+        printWindow.document.close();
+        printWindow.print();
+    }
+
+    // Créer un match
+    document.getElementById('matchForm').addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const payload = {
+            Equipe1: document.getElementById('equipe1').value,
+            Equipe2: document.getElementById('equipe2').value,
+            Arbitre_principal: document.getElementById('arb_principal').value,
+            Date_heure: document.getElementById('date_heure').value,
+            Lieu: document.getElementById('lieu').value,
+            statut: 'prévu'
+        };
+        const res = await executeAction('/api/matchs', 'POST', payload);
+        if (res) {
+            alert("Match créé !");
+            loadMatches();
+            e.target.reset();
+        }
+    });
+    
+    async function forceRecalculate() {
+    if(confirm("Voulez-vous recalculer tout le classement ?")) {
+        const res = await fetch('/api/recalculate', { method: 'POST' });
+        if(res.ok) alert("Classement mis à jour !");
+    }
+}
+
+
+    async function deleteMatch(id) {
+        if (confirm('Supprimer ce match ?')) {
+            const res = await executeAction(`/api/matchs/${id}`, 'DELETE');
+            if (res) loadMatches();
+        }
+    }
+
+    loadTeams();
+    loadMatches();
+</script>
+
+
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+  </body>
+
+</html>

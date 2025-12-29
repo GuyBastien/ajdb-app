@@ -1,0 +1,146 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Buteurs - AJDB</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+  <style>
+    :root { --gold: #FFD700; --silver: #B5B7BB; --bronze: #AD8A56; --primary: #120491; }
+    body { background: #f4f7fe; font-family: sans-serif; padding-top: 85px; }
+    .navbar { background: var(--primary) !important; }
+    .podium-card { background: white; border-radius: 24px; padding: 30px 20px; text-align: center; position: relative; box-shadow: 0 10px 30px rgba(0,0,0,0.03); }
+    .podium-card.first { border: 2px solid var(--gold); transform: scale(1.05); z-index: 2; }
+    .podium-rank { width: 45px; height: 45px; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: -55px auto 15px; font-weight: 900; color: white; border: 5px solid #f4f7fe; }
+    .rank-1 { background: var(--gold); color: #856404; }
+    .rank-2 { background: var(--silver); color: #475569; }
+    .rank-3 { background: var(--bronze); color: #78350f; }
+    .avatar-circle { width: 44px; height: 44px; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-weight: 700; color: white; margin-right: 15px; }
+    .goal-badge { background: rgba(18, 4, 145, 0.08); color: var(--primary); padding: 6px 14px; border-radius: 10px; font-weight: 800; }
+  </style>
+</head>
+<body>
+
+<nav class="navbar navbar-expand navbar-dark fixed-top">
+  <div class="container">
+    <a class="navbar-brand fw-bold" href="Accueil.html">🏆 AJDB FOOT</a>
+    <ul class="navbar-nav ms-auto">
+      <li class="nav-item"><a class="nav-link" href="Tableau_Bord.html">Dashboard</a></li>
+      <li class="nav-item"><a class="nav-link active" href="Classement_buteur.html">Buteurs</a></li>
+    </ul>
+  </div>
+</nav>
+
+<main class="container my-4">
+  <h2 class="fw-bold mb-4">Soulier d'Or <span class="text-primary">2025</span></h2>
+
+  <div id="podiumRow" class="row mb-5 g-4 align-items-end"></div>
+
+  <div class="row g-4">
+    <div class="col-lg-8">
+      <div class="card border-0 shadow-sm rounded-4">
+        <div class="table-responsive">
+          <table id="buteursTable" class="table align-middle mb-0">
+            <thead>
+              <tr>
+                <th>Rang</th>
+                <th>Joueur</th>
+                <th class="text-center">Buts</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr><td colspan="3" class="text-center py-5">Chargement...</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+    <div class="col-lg-4">
+      <div class="bg-white p-4 rounded-4 shadow-sm">
+        <canvas id="buteursChart"></canvas>
+      </div>
+    </div>
+  </div>
+</main>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+  const tableBody = document.querySelector('#buteursTable tbody');
+  const podiumRow = document.getElementById('podiumRow');
+  const avatarColors = ['#6366f1', '#ec4899', '#8b5cf6', '#10b981', '#f59e0b'];
+
+  async function loadButeurs() {
+    try {
+      const res = await fetch('/api/buteurs');
+      const data = await res.json();
+      
+      // Tri par buts (clé utilisée dans ton API Termux : 'nombre_buts' ou 'buts')
+      data.sort((a,b) => (b.nombre_buts || b.buts) - (a.nombre_buts || a.buts));
+
+      renderPodium(data.slice(0, 3));
+
+      tableBody.innerHTML = data.map((p, i) => {
+        const nom = p.nom || p.player_name || 'Inconnu';
+        const buts = p.nombre_buts || p.buts || 0;
+        return `
+          <tr>
+            <td class="fw-bold text-primary">${i+1}</td>
+            <td>
+              <div class="d-flex align-items-center">
+                <div class="avatar-circle" style="background: ${avatarColors[i%5]}">${nom.charAt(0)}</div>
+                <div>
+                  <div class="fw-bold">${nom}</div>
+                  <div class="small text-muted">${p.nomEquipe || p.team_name || '—'}</div>
+                </div>
+              </div>
+            </td>
+            <td class="text-center"><span class="goal-badge">${buts}</span></td>
+          </tr>`;
+      }).join('');
+
+      renderChart(data.slice(0, 5));
+    } catch (err) {
+      tableBody.innerHTML = '<tr><td colspan="3" class="text-center text-danger">Erreur serveur</td></tr>';
+    }
+  }
+
+  function renderPodium(top3) {
+    if(!top3.length) return;
+    const order = [1, 0, 2]; // 2ème, 1er, 3ème
+    const items = order.map(idx => top3[idx]).filter(x => x);
+    
+    podiumRow.innerHTML = items.map((p, i) => {
+      const rank = (items.length === 3) ? [2, 1, 3][i] : i + 1;
+      const nom = p.nom || p.player_name;
+      const buts = p.nombre_buts || p.buts || 0;
+      return `
+        <div class="col-4">
+          <div class="podium-card ${rank === 1 ? 'first' : ''}">
+            <div class="podium-rank rank-${rank}">${rank}</div>
+            <h6 class="fw-bold mb-1">${nom}</h6>
+            <div class="h3 fw-bold text-primary mb-0">${buts}</div>
+            <small class="text-muted fw-bold">BUTS</small>
+          </div>
+        </div>`;
+    }).join('');
+  }
+
+  function renderChart(top5) {
+    new Chart(document.getElementById('buteursChart'), {
+      type: 'doughnut',
+      data: {
+        labels: top5.map(p => p.nom || p.player_name),
+        datasets: [{
+          data: top5.map(p => p.nombre_buts || p.buts),
+          backgroundColor: ['#120491', '#3b82f6', '#60a5fa', '#93c5fd', '#dbeafe']
+        }]
+      },
+      options: { cutout: '70%', plugins: { legend: { position: 'bottom' } } }
+    });
+  }
+
+  window.onload = loadButeurs;
+</script>
+</body>
+</html>

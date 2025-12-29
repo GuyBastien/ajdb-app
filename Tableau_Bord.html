@@ -1,0 +1,693 @@
+<!doctype html>
+<html lang="fr">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard Foot du Bourg</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+    
+    <style>
+    :root {
+        --primary-blue: #120491;
+        --secondary-green: #1e7e34;
+        --accent-gold: #ffd700;
+        --stat-blue: #007bff;
+        --stat-red: #dc3545;
+        --bg-light: #f4f7fe;
+        --card-shadow: 0 10px 20px rgba(0,0,0,0.05);
+    }
+
+    body { 
+        background: var(--bg-light); 
+        color: #2d3748; 
+        padding-top: 90px; 
+        font-family: 'Inter', sans-serif; 
+    }
+    
+    /* ================= TOPBAR & NAV ================= */
+    .topbar { 
+        background: var(--primary-blue); 
+        height: 70px; 
+        position: fixed; 
+        top: 0; left: 0; right: 0; 
+        z-index: 1030; 
+        box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+        border-bottom: 3px solid var(--secondary-green); /* Ligne de gazon sous le menu */
+        display: flex;
+        align-items: center;
+    }
+
+    .brand { 
+        font-weight: 800; 
+        font-size: 1.2rem; 
+        color: #fff; 
+        letter-spacing: 1px;
+    }
+
+    .nav-link-custom { 
+        color: #ffffff !important; 
+        text-decoration: none; 
+        font-size: 0.85rem; 
+        font-weight: 700; 
+        text-transform: uppercase; 
+        letter-spacing: 1.2px; 
+        padding: 8px 15px;
+        border-radius: 8px;
+        transition: all 0.3s ease;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+
+    .nav-link-custom:hover { 
+        background: rgba(255, 255, 255, 0.1); 
+        color: var(--accent-gold) !important; /* Devient Or au survol */
+    }
+
+    .nav-link-custom.active {
+        background: var(--secondary-green); /* Fond vert pour la page active */
+        color: white !important;
+        box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+    }
+
+    /* ================= CARDS & LAYOUT ================= */
+    .card-overview { 
+        background: #fff; 
+        border: 1px solid rgba(0,0,0,0.03); 
+        border-radius: 16px; 
+        padding: 20px; 
+        box-shadow: var(--card-shadow);
+        transition: transform 0.3s ease;
+    }
+    
+    .card-overview:hover { transform: translateY(-5px); }
+    
+    .icon-box { 
+        width: 54px; height: 54px; 
+        border-radius: 12px; 
+        display: flex; align-items: center; justify-content: center; 
+        font-size: 1.4rem;
+    }
+
+    .analyzer-main { 
+        background: #fff; 
+        border-radius: 20px; 
+        padding: 25px; 
+        box-shadow: var(--card-shadow); 
+        height: 100%; 
+    }
+
+    .section-title { 
+        font-weight: 800; 
+        font-size: 1.2rem; 
+        margin-bottom: 25px; 
+        color: var(--primary-blue);
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+
+        /* Force l'affichage des graphiques sur mobile */
+.chart-container {
+    position: relative;
+    height: 150px; /* Taille fixe pour le cercle */
+    width: 150px;
+    margin: 0 auto;
+}
+
+canvas {
+    max-width: 100% !important;
+    max-height: 100% !important;
+}
+    /* ================= STATS & BARS ================= */
+    .bar-container-pro { 
+        flex: 1; height: 10px; 
+        background: #edf2f7; 
+        border-radius: 20px; 
+        overflow: hidden; 
+        margin: 0 15px;
+        display: flex;
+    }
+
+    /* Amélioration des cartes de statistiques */
+.card-overview {
+    border: none;
+    background: linear-gradient(145deg, #ffffff, #f8fafc);
+    box-shadow: 0 4px 15px rgba(0,0,0,0.03);
+}
+
+/* Style de l'Analyseur de Match */
+#matchStatsCard {
+    animation: fadeIn 0.5s ease-out;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.score-banner {
+    background: #f8fafc;
+    border-radius: 15px;
+    padding: 15px;
+    margin-bottom: 25px;
+    border: 1px solid #edf2f7;
+}
+
+.team-logo {
+    width: 48px;
+    height: 48px;
+    object-fit: contain;
+    filter: drop-shadow(0 2px 4px rgba(0,0,0,0.1));
+}
+
+/* Cercle Donut - Layout */
+.donut-container {
+    display: flex;
+    justify-content: space-around;
+    gap: 10px;
+    margin-bottom: 30px;
+}
+
+.donut-item {
+    width: 120px;
+    height: 120px;
+    position: relative;
+}
+canvas {
+    max-width: 100% !important;
+    max-height: 100% !important;
+}
+
+.donut-label {
+    font-size: 0.7rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    color: #64748b;
+    margin-top: 8px;
+}
+
+/* Container de la ligne de stat */
+.stat-row-pro {
+    display: flex;
+    align-items: center;
+    justify-content: center; /* Centre l'ensemble du bloc */
+    margin-bottom: 20px;
+    gap: 15px; /* Espace entre chiffres et barre */
+}
+
+/* Nom de la statistique (ex: PASSES) */
+.stat-label-pro {
+    width: 100px;
+    text-align: center;
+    font-size: 0.7rem;
+    font-weight: 800;
+    color: #64748b;
+    text-transform: uppercase;
+    order: 2; /* Place le texte au centre */
+}
+
+/* La barre de progression - TAILLE FIXÉE ICI */
+.bar-container-pro {
+    width: 150px; /* Longueur fixe de la barre pour qu'elle ne soit plus "trop longue" */
+    height: 10px;
+    background: #edf2f7;
+    border-radius: 10px;
+    overflow: hidden;
+    display: flex;
+    order: 2; /* On gère l'ordre via le JS ci-dessous */
+}
+
+.val-left { width: 35px; text-align: right; order: 1; font-weight: 900; color: #0b5cff; }
+.val-right { width: 35px; text-align: left; order: 3; font-weight: 900; color: #ff4d4f; }
+
+.val-left, .val-right {
+    width: 25px; /* Largeur fixe pour les chiffres */
+    font-weight: 900;
+    font-size: 0.9rem;
+}
+
+.val-left, .val-right {
+    width: 30px;
+    font-weight: 900;
+    font-size: 1rem;
+}
+
+.val-left { text-align: left; color: #0b5cff; }
+.val-right { text-align: right; color: #ff4d4f; }
+
+.bar-container-pro {
+    flex: 1;
+    height: 8px;
+    background: #edf2f7;
+    border-radius: 10px;
+    overflow: hidden;
+    display: flex;
+}
+
+
+    .bar-fill-left { background: linear-gradient(90deg, #4481eb 0%, #04befe 100%); }
+    .bar-fill-right { background: linear-gradient(90deg, #f093fb 0%, #f5576c 100%); }
+
+    .score-display { 
+        background: var(--primary-blue); 
+        color: white; 
+        padding: 8px 20px; 
+        border-radius: 10px; 
+        font-weight: 800;
+        letter-spacing: 2px;
+        box-shadow: inset 0 0 10px rgba(0,0,0,0.3);
+    }
+
+    
+
+    /* ================= TABLES ================= */
+    .table-custom thead th {
+        background: #f8fafc;
+        border: none;
+        padding: 15px 12px;
+        color: #64748b;
+        font-weight: 700;
+        text-transform: uppercase;
+        font-size: 0.75rem;
+    }
+    
+    .table-custom tbody td { 
+        padding: 15px 12px; 
+        border-bottom: 1px solid #f1f5f9;
+        vertical-align: middle;
+    }
+
+    .donut-item {
+    height: 120px; /* Force la hauteur pour que le cercle ne soit pas écrasé */
+    width: 100px;
+}
+
+    .stat-val { font-weight: 800; font-size: 1.4rem; margin: 0; color: var(--primary-blue); }
+    .stat-lab { color: #718096; font-size: 0.8rem; font-weight: 600; text-transform: uppercase; }
+
+</style>
+</head>
+<body>
+
+    <header class="topbar">
+        <div class="container d-flex justify-content-between align-items-center">
+            <div class="brand">🏆 FOOT DUBOURG</div>
+            <nav class="d-flex gap-2">
+    <a class="nav-link-custom px-2" href="Accueil.html"><i class="fas fa-home"></i> <span class="d-none d-md-inline">Accueil</span></a>
+    <a class="nav-link-custom px-2" href="Classement.html"><i class="fas fa-list-ol"></i> <span class="d-none d-md-inline">Classement</span></a>
+    <a class="nav-link-custom px-2" href="Classement_buteur.html"><i class="fas fa-fire"></i> <span class="d-none d-md-inline">Buteurs</span></a>
+</nav>
+
+        </div>
+    </header>
+
+    <main class="container">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h4 class="fw-bold m-0">Vue d'ensemble</h4>
+            <button id="refreshDashboard" class="btn btn-sm btn-outline-secondary bg-white shadow-sm">
+                <i class="fas fa-rotate me-1"></i> Actualiser
+            </button>
+        </div>
+
+        <div class="row g-3 mb-4">
+            <div class="col-6 col-md-3">
+                <div class="card-overview">
+                    <div class="icon-box" style="background:#e0e7ff; color:#4338ca;"><i class="fas fa-shield-halved"></i></div>
+                    <div><p class="stat-val" id="count-equipes">--</p><span class="stat-lab">Équipes engagées</span></div>
+                </div>
+            </div>
+            <div class="col-6 col-md-3">
+                <div class="card-overview">
+                    <div class="icon-box" style="background:#dcfce7; color:#15803d;"><i class="fas fa-users"></i></div>
+                    <div><p class="stat-val" id="count-joueurs">--</p><span class="stat-lab">Joueurs inscrits</span></div>
+                </div>
+            </div>
+            <div class="col-6 col-md-3">
+                <div class="card-overview">
+                    <div class="icon-box" style="background:#fef3c7; color:#b45309;"><i class="fas fa-calendar-days"></i></div>
+                    <div><p class="stat-val" id="count-matchs">--</p><span class="stat-lab">Matchs à venir</span></div>
+                </div>
+            </div>
+            <div class="col-6 col-md-3">
+                <div class="card-overview">
+                    <div class="icon-box" style="background:#f3e8ff; color:#7e22ce;"><i class="fas fa-fire-flame-curved"></i></div>
+                    <div><p class="stat-val" id="top-buteur" style="font-size:0.9rem;">--</p><span class="stat-lab">Meilleur Buteur</span></div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row g-4">
+            <div class="col-lg-7">
+                <div class="analyzer-main">
+                    <h5 class="section-title">Tendances du Championnat</h5>
+                    <canvas id="trendChart" height="260"></canvas>
+                </div>
+            </div>
+
+            <div class="col-lg-5">
+                <div class="analyzer-main">
+                    <h5 class="section-title">Analyseur de Match</h5>
+                    <div class="input-group input-group-sm mb-4">
+                        <span class="input-group-text bg-white border-end-0"><i class="fas fa-search text-muted"></i></span>
+                        <input id="matchIdInput" class="form-control border-start-0" placeholder="Entrez l'ID du match...">
+                        <button id="loadMatchBtn" class="btn btn-primary px-3">Analyser</button>
+                    </div>
+
+                    <div id="matchStatsCard" style="display:none;">
+                        <div class="score-banner d-flex align-items-center justify-content-between">
+                            <div class="text-center" style="width:30%">
+                                <img id="logoLeft" class="team-logo" src="" onerror="this.src='https://placehold.co/45x45?text=EQ1'">
+                                <div id="teamLeftName" class="small fw-bold mt-1 text-truncate"></div>
+                            </div>
+                            <div class="score-display" id="scoreCenter">0 - 0</div>
+                            <div class="text-center" style="width:30%">
+                                <img id="logoRight" class="team-logo" src="" onerror="this.src='https://placehold.co/45x45?text=EQ2'">
+                                <div id="teamRightName" class="small fw-bold mt-1 text-truncate"></div>
+                            </div>
+                        </div>
+
+                        <div class="donut-container">
+                            <div class="donut-item"><canvas id="donutPos"></canvas><div class="donut-label">Possession</div></div>
+                            <div class="donut-item"><canvas id="donutDuels"></canvas><div class="donut-label">% Duels</div></div>
+                            <div class="donut-item"><canvas id="donutAerial"></canvas><div class="donut-label">% Aériens</div></div>
+                        </div>
+
+                        <div id="statsList"></div>
+                    </div>
+                    
+                    <div id="analyzeResultText" class="text-muted text-center py-5 border rounded-3 bg-light">
+                        <i class="fas fa-chart-simple fa-2x mb-2 opacity-25"></i>
+                        <p class="small mb-0">Entrez un ID pour voir les stats détaillées</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row mt-4 g-4">
+            <div class="col-lg-6">
+                <div class="analyzer-main">
+                    <h5 class="section-title">Prochains Matchs</h5>
+                    <div class="table-responsive">
+                        <table class="table table-custom table-hover" id="upcomingTable">
+                            <thead><tr><th>Match</th><th>Date & Lieu</th></tr></thead>
+                            <tbody><tr><td colspan="2" class="text-center py-3 text-muted">Chargement...</td></tr></tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-6">
+                <div class="analyzer-main">
+                    <h5 class="section-title">Classement</h5>
+                    <div class="table-responsive">
+                        <table class="table table-custom table-hover" id="classementTable">
+                            <thead><tr><th>Pos</th><th>Equipe</th><th>MJ</th><th>V</th><th>N</th><th>D</th><th>Pts</th></tr></thead>
+                            <tbody><tr><td colspan="7" class="text-center py-3 text-muted">Chargement...</td></tr></tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+
+   <script>
+   async function loadDashboard() {
+    try {
+        // 1. Appel groupé à l'API (Routes vérifiées pour Termux)
+        const [rankRes, eqRes, jRes, mRes, bRes] = await Promise.all([
+            fetch('/api/stats'),
+            fetch('/api/equipes'), 
+            fetch('/api/joueurs'), 
+            fetch('/api/matchs'), 
+            fetch('/api/buteurs')
+        ]);
+
+        // 2. Conversion sécurisée en JSON
+        const classement = await rankRes.json();
+        const equipes = await eqRes.json();
+        const joueurs = await jRes.json();
+        const matchs = await mRes.json();
+        const buteurs = await bRes.json();
+
+        // 3. Mise à jour des compteurs (Haut de page)
+        document.getElementById('count-equipes').textContent = equipes.length || 0;
+        document.getElementById('count-joueurs').textContent = joueurs.length || 0;
+        
+        // 4. Gestion des Matchs à Venir (Suppression du trait rouge)
+        const now = new Date();
+        // On filtre en vérifiant que la propriété Date_heure existe
+        
+        const futureMatchs = matchs || []; 
+console.log("Matchs bruts reçus :", futureMatchs);
+        
+        // Mise à jour du badge "MATCHS À VENIR"
+        document.getElementById('count-matchs').textContent = futureMatchs.length;
+
+        // 5. Remplissage de la Table "Prochains Matchs"
+        const upcomingBody = document.querySelector('#upcomingTable tbody');
+        if (upcomingBody) {
+            if (futureMatchs.length > 0) {
+                // On utilise Equipe1_name car c'est ce que ton API renvoie réellement
+                upcomingBody.innerHTML = futureMatchs.slice(0, 5).map(m => `
+                    <tr>
+                        <td><div class="small fw-bold">${m.Equipe1_name} vs ${m.Equipe2_name}</div></td>
+                        <td><div class="text-muted small">${new Date(m.Date_heure).toLocaleDateString('fr-FR')} - ${m.Lieu || 'Terrain'}</div></td>
+                    </tr>
+                `).join('');
+            } else {
+                upcomingBody.innerHTML = '<tr><td colspan="2" class="text-center p-3 text-muted">Aucun match à venir</td></tr>';
+            }
+        }
+
+        // 6. Affichage du meilleur buteur
+        const topButeurEl = document.getElementById('top-buteur');
+        if (topButeurEl) {
+            topButeurEl.textContent = buteurs && buteurs[0] 
+                ? `${buteurs[0].player_name} (${buteurs[0].buts})` 
+                : '--';
+        }
+
+        // 7. Table Classement
+        const classementBody = document.querySelector('#classementTable tbody');
+        if (classementBody) {
+            if (classement && classement.length > 0) {
+                classementBody.innerHTML = classement.map((t, i) => `
+                    <tr>
+                        <td><span class="badge ${i < 3 ? 'bg-primary' : 'bg-secondary'}">${i + 1}</span></td>
+                        <td class="fw-bold">${t.nomEquipe || '—'}</td>
+                        <td>${t.matches_played || 0}</td>
+                        <td>${t.wins || 0}</td>
+                        <td>${t.draws || 0}</td>
+                        <td>${t.losses || 0}</td>
+                        <td class="fw-bold text-primary">${t.points || 0}</td>
+                    </tr>
+                `).join('');
+            } else {
+                classementBody.innerHTML = '<tr><td colspan="7" class="text-center">Aucune donnée de classement</td></tr>';
+            }
+        }
+
+        // 8. Graphique des tendances
+        if (classement && classement.length > 0) {
+            renderTrendChart(classement.slice(0, 6));
+        }
+
+    } catch (e) { 
+        console.error("Erreur lors du chargement du Dashboard :", e);
+        const classementBody = document.querySelector('#classementTable tbody');
+        if (classementBody) {
+            classementBody.innerHTML = '<tr><td colspan="7" class="text-center text-danger">Erreur de connexion API</td></tr>';
+        }
+    }
+}
+
+    // --- GRAPHIQUES ---
+    let trendChart;
+    function renderTrendChart(data) {
+        const canvas = document.getElementById('trendChart');
+        if (!canvas || !data.length) return;
+        const ctx = canvas.getContext('2d');
+        
+        const gradient = ctx.createLinearGradient(0, 0, 0, 400);
+        gradient.addColorStop(0, '#120491');
+        gradient.addColorStop(1, '#0b5cff');
+
+        if (trendChart) trendChart.destroy();
+        trendChart = new Chart(ctx, {
+            type: 'bar',
+            data: {
+              labels: data.map(d => d.nomEquipe),
+              datasets: [{ 
+                label: 'Points', 
+                data: data.map(d => d.points), 
+                backgroundColor: gradient,
+                borderRadius: 8,
+                barThickness: 25
+              }]
+            },
+            options: { 
+              responsive: true, 
+              plugins: { legend: { display: false } }, 
+              scales: { 
+                y: { beginAtZero: true },
+                x: { grid: { display: false } }
+              } 
+            }
+        });
+    }
+
+    // --- ANALYSEUR DE MATCH ---
+
+
+// Ta fonction createDonut reste quasiment la même, mais on ajoute une gestion de labels
+function createDonut(id, l, r) {
+    const canvas = document.getElementById(id);
+    if (!canvas) {
+        console.warn(`Canvas avec l'ID "${id}" introuvable.`);
+        return;
+    }
+
+    const valLeft = parseInt(l) || 0;
+    const valRight = parseInt(r) || 0;
+    
+    // Si 0-0, on affiche un cercle gris neutre
+    const isEmpty = (valLeft === 0 && valRight === 0);
+    const dataValues = isEmpty ? [1, 1] : [valLeft, valRight];
+    const displayColor = isEmpty ? ['#e0e0e0', '#f5f5f5'] : ['#0b5cff', '#ff4d4f'];
+
+    // Nettoyage impératif pour éviter les bugs de superposition
+    const chartExist = Chart.getChart(id);
+    if (chartExist) chartExist.destroy();
+
+    return new Chart(canvas, {
+        type: 'doughnut',
+        data: {
+            datasets: [{
+                data: dataValues,
+                backgroundColor: displayColor,
+                borderWidth: 2,
+                borderColor: '#ffffff'
+            }]
+        },
+        options: {
+            cutout: '70%',
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: { display: false },
+                tooltip: { enabled: !isEmpty } 
+            }
+        }
+    });
+}
+
+  
+
+
+// --- ANALYSEUR DE MATCH (VERSION CORRIGÉE) ---
+let donuts = {}; 
+
+async function showMatchSummary(id) {
+    try {
+        const res = await fetch(`/api/matchs/${id}/summary`);
+        if (!res.ok) return alert("Match non trouvé");
+        
+        const data = await res.json();
+        console.log("Data reçue:", data); // Pour vérifier dans F12
+
+        // 1. AFFICHAGE DU CONTENEUR
+        document.getElementById('matchStatsCard').style.display = 'block';
+
+        // 2. MISE À JOUR DU SCORE ET DES NOMS (Indispensable !)
+        // On vérifie que les IDs existent dans ton HTML (teamLName ou teamLeftName ?)
+        const tL = document.getElementById('teamLName') || document.getElementById('teamLeftName');
+        const tR = document.getElementById('teamRName') || document.getElementById('teamRightName');
+        const sC = document.getElementById('scoreCenter');
+
+        if (tL) tL.textContent = data.match.teamLeft.name;
+        if (tR) tR.textContent = data.match.teamRight.name;
+        if (sC) sC.textContent = `${data.match.teamLeft.score} - ${data.match.teamRight.score}`;
+
+        // 3. GESTION DES DONUTS (Utilise les IDs exacts de ton HTML)
+        
+        // POSSESSION
+        const posData = (data.stats && data.stats.possession) ? data.stats.possession : [0, 0];
+        donuts.pos = createDonut('donutPos', posData[0], posData[1]);
+
+        // DUELS
+        const duelData = (data.stats && data.stats.duels) ? data.stats.duels : [0, 0];
+        donuts.duels = createDonut('donutDuels', duelData[0], duelData[1]);
+
+        // AÉRIENS (Vérifie si l'ID est donutAerial ou donutAerials dans ton HTML)
+        const airData = (data.stats && data.stats.aerial) ? data.stats.aerial : [0, 0];
+        donuts.aerial = createDonut('donutAerial', airData[0], airData[1]);
+
+    } catch (err) {
+        console.error("Erreur graphique:", err);
+    }
+}
+
+// Fonction createDonut corrigée (SANS erreur de variable sur tooltip)
+function createDonut(id, l, r) {
+    const canvas = document.getElementById(id);
+    if (!canvas) return null;
+
+    const valLeft = parseInt(l) || 0;
+    const valRight = parseInt(r) || 0;
+    const isEmpty = (valLeft === 0 && valRight === 0);
+    
+    const dataValues = isEmpty ? [1, 1] : [valLeft, valRight];
+    const displayColor = isEmpty ? ['#e0e0e0', '#f5f5f5'] : ['#0b5cff', '#ff4d4f'];
+
+    const chartExist = Chart.getChart(id);
+    if (chartExist) chartExist.destroy();
+
+    return new Chart(canvas, {
+        type: 'doughnut',
+        data: {
+            datasets: [{
+                data: dataValues,
+                backgroundColor: displayColor,
+                borderWidth: 2,
+                borderColor: '#ffffff'
+            }]
+        },
+        options: {
+            cutout: '70%',
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: { display: false },
+                tooltip: { enabled: !isEmpty } 
+            }
+        }
+    });
+}
+
+// Fonction utilitaire pour mettre à jour les barres de stats
+function updateStatBar(elementId, valL, valR) {
+    const el = document.getElementById(elementId);
+    if (!el) return;
+    const total = (valL + valR) || 1;
+    const pct = (valL / total) * 100;
+    el.style.width = pct + '%'; // La barre se remplit selon le ratio de l'équipe gauche
+}
+
+
+    document.getElementById('loadMatchBtn').addEventListener('click', () => {
+        const id = document.getElementById('matchIdInput').value;
+        if(id) showMatchSummary(id);
+    });
+
+    document.getElementById('refreshDashboard').addEventListener('click', loadDashboard);
+    loadDashboard();
+</script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+</body>
+</html>
+
+

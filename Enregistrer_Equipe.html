@@ -1,0 +1,418 @@
+<!doctype html>
+<html lang="fr">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Enregistrer une équipe - AJDB</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+    
+    <script>
+        // Sécurité : Redirection si non connecté
+        if (!localStorage.getItem('isLoggedIn')) {
+            window.location.href = '/';
+        }
+    </script>
+
+    <style>
+        :root {
+            --primary-blue: #120491;
+            --secondary-green: #1e7e34;
+        }
+
+        body { 
+            background: radial-gradient(circle at top, #f8f9fa 0%, #e9ecef 100%);
+            color: #2d3436; 
+            font-family: 'Inter', system-ui, sans-serif; 
+            padding-top: 85px;
+            min-height: 100vh;
+        }
+
+        .navbar { box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
+        
+        .card { 
+            border: none; 
+            border-radius: 20px; 
+            background: rgba(255, 255, 255, 0.9);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255,255,255,0.4);
+        }
+
+        .section-title {
+            color: var(--primary-blue);
+            font-weight: 800;
+            position: relative;
+            padding-bottom: 10px;
+        }
+
+        .section-title::after {
+            content: '';
+            position: absolute;
+            left: 0; bottom: 0;
+            width: 50px; height: 4px;
+            background: var(--secondary-green);
+            border-radius: 2px;
+        }
+
+        .logo-container {
+            position: relative;
+            width: 140px; height: 140px;
+            margin: 0 auto;
+        }
+
+        .logo-preview { 
+            width: 100%; height: 100%; 
+            object-fit: cover; 
+            border-radius: 50%; 
+            border: 4px solid #fff;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            background: #eee;
+        }
+
+        .btn-upload {
+            background: var(--primary-blue);
+            color: white;
+            border-radius: 10px;
+            padding: 10px 20px;
+            transition: all 0.3s;
+            cursor: pointer;
+        }
+
+        .btn-upload:hover { background: #0b0d17; color: white; }
+        
+        .form-label { font-weight: 600; font-size: 0.9rem; color: #4a5568; }
+        .form-control { border-radius: 10px; padding: 12px; border: 1px solid #e2e8f0; }
+        .form-control:focus { border-color: var(--primary-blue); box-shadow: 0 0 0 3px rgba(18, 4, 145, 0.1); }
+    </style>
+</head>
+<body>
+
+    <nav class="navbar fixed-top" style="background: var(--primary-blue) !important; height: 75px; border-bottom: 3px solid var(--secondary-green);">
+        <div class="container d-flex justify-content-between align-items-center">
+            <a class="navbar-brand fw-bold text-white m-0" href="Accueil.html">⚽ AJDB</a>
+            <div class="nav-icons-group" style="display: flex; gap: 8px;">
+                <a class="nav-link-icon" href="Accueil.html" title="Accueil" style="width: 42px; height: 42px; display: flex; align-items: center; justify-content: center; border-radius: 10px; color: white; background: rgba(255,255,255,0.1); text-decoration: none;">
+                    <i class="fas fa-home"></i>
+                </a>
+                <a class="nav-link-icon" href="Tableau_Bord.html" title="Tableau de bord" style="width: 42px; height: 42px; display: flex; align-items: center; justify-content: center; border-radius: 10px; color: white; background: rgba(255,255,255,0.1); text-decoration: none;">
+                    <i class="fas fa-chart-line"></i>
+                </a>
+                <a class="nav-link-icon" href="Enregistrer_Equipe.html" title="Équipes" style="width: 42px; height: 42px; display: flex; align-items: center; justify-content: center; border-radius: 10px; color: white; background: var(--secondary-green); text-decoration: none;">
+                    <i class="fas fa-shield-halved"></i>
+                </a>
+                <a class="nav-link-icon" href="Enregistrer_joueur.html" title="Joueurs" style="width: 42px; height: 42px; display: flex; align-items: center; justify-content: center; border-radius: 10px; color: white; background: rgba(255,255,255,0.1); text-decoration: none;">
+                    <i class="fas fa-users"></i>
+                </a>
+                <a class="nav-link-icon" href="#" id="logoutBtn" title="Déconnexion" style="width: 42px; height: 42px; display: flex; align-items: center; justify-content: center; border-radius: 10px; color: white; background: rgba(255,255,255,0.1); text-decoration: none;">
+                    <i class="fas fa-sign-out-alt"></i>
+                </a>
+            </div>
+        </div>
+    </nav>
+
+    <main class="container my-5">
+        <div class="row justify-content-center">
+            <div class="col-lg-10">
+                <div class="card shadow-lg p-4 p-md-5">
+                    <div class="text-center mb-5">
+                        <h2 class="section-title d-inline-block">Enregistrer une Équipe</h2>
+                        <p class="text-muted mt-2">Créez l'identité de votre club dans le championnat.</p>
+                    </div>
+
+                    <form id="teamForm" novalidate>
+                        <div class="row g-4">
+                            <div class="col-md-4 text-center border-end">
+                                <div class="logo-container mb-3">
+                                    <img id="logoPreview" class="logo-preview" src="images/placeholder-team.png" alt="Aperçu">
+                                </div>
+                                <label for="logo" class="btn btn-upload btn-sm">
+                                    <i class="fas fa-camera me-2"></i>Choisir un logo
+                                </label>
+                                <input id="logo" name="logo" type="file" accept="image/*" class="d-none">
+                                <p class="text-muted small mt-3 px-2">Format carré recommandé (PNG/JPG).</p>
+                            </div>
+
+                            <div class="col-md-8">
+                                <div class="row g-3">
+                                    <div class="col-md-8">
+                                        <label for="nomEquipe" class="form-label">Nom de l'équipe *</label>
+                                        <input id="nomEquipe" name="nomEquipe" class="form-control" placeholder="Ex: Real Madrid" required>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <label for="nombre_joueurs" class="form-label">Effectif</label>
+                                        <input id="nombre_joueurs" name="nombre_joueurs" type="number" class="form-control" value="0">
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label for="ville" class="form-label">Ville / Quartier</label>
+                                        <input id="ville" name="ville" class="form-control" placeholder="Du Bourg">
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label for="coach" class="form-label">Entraîneur (Coach)</label>
+                                        <input id="coach" name="coach" class="form-control" placeholder="Nom du coach">
+                                    </div>
+                                    <div class="col-12">
+                                        <label for="president" class="form-label">Président du club</label>
+                                        <input id="president" name="president" class="form-control" placeholder="Nom du président">
+                                    </div>
+                                    <div class="col-12 mt-4">
+                                        <div id="formAlert" class="alert d-none" role="alert"></div>
+                                        <div class="d-flex gap-2">
+                                            <button type="submit" id="submitBtn" class="btn btn-primary px-4 py-2 fw-bold" style="background: var(--primary-blue); border:none;">
+                                                <i class="fas fa-save me-2"></i>Enregistrer l'équipe
+                                            </button>
+                                            <a href="Tableau_Bord.html" class="btn btn-outline-secondary px-4 py-2">Annuler</a>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </main>
+    <section class="container mb-5">
+    <div class="card shadow-sm border-0 p-4">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h3 class="section-title mb-0">Équipes Engagées</h3>
+            <div class="d-flex gap-2">
+                <div class="input-group" style="max-width: 300px;">
+                    <span class="input-group-text bg-white border-end-0"><i class="fas fa-search text-muted"></i></span>
+                    <input type="text" id="searchTeam" class="form-control border-start-0" placeholder="Rechercher une équipe...">
+                </div>
+                <button onclick="loadTeams()" class="btn btn-light border" title="Actualiser">
+                    <i class="fas fa-sync-alt"></i>
+                </button>
+            </div>
+        </div>
+
+        <div class="table-responsive">
+            <table class="table table-hover align-middle">
+                <thead class="table-light">
+                    <tr>
+                        <th style="width: 80px;">Logo</th>
+                        <th>Nom de l'Équipe</th>
+                        <th>Ville / Quartier</th>
+                        <th>Coach</th>
+                        <th class="text-center">Effectif</th>
+                        <th class="text-end">Actions</th>
+                    </tr>
+                </thead>
+                <tbody id="teamsTableBody">
+                    <tr>
+                        <td colspan="6" class="text-center py-5">
+                            <div class="spinner-border text-primary" role="status"></div>
+                            <p class="mt-2 text-muted">Chargement des équipes...</p>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</section>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <script>
+        const logoInput = document.getElementById('logo');
+        const logoPreview = document.getElementById('logoPreview');
+
+        logoInput.addEventListener('change', () => {
+            const f = logoInput.files[0];
+            if (f) {
+                const reader = new FileReader();
+                reader.onload = () => { logoPreview.src = reader.result; };
+                reader.readAsDataURL(f);
+            }
+        });
+
+        document.getElementById('logoutBtn').addEventListener('click', (e) => {
+            e.preventDefault();
+            localStorage.removeItem('isLoggedIn');
+            window.location.href = '/';
+        });
+
+        const form = document.getElementById('teamForm');
+        const alertEl = document.getElementById('formAlert');
+
+        form.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const btn = document.getElementById('submitBtn');
+            btn.disabled = true;
+            btn.innerHTML = '<span class="spinner-border spinner-border-sm"></span> Traitement...';
+
+            const payload = {
+                nomEquipe: form.nomEquipe.value.trim(),
+                nombre_joueurs: parseInt(form.nombre_joueurs.value || '0', 10),
+                ville: form.ville.value || null,
+                coach: form.coach.value || null,
+                president: form.president.value || null,
+                logo: null
+            };
+
+            if (!payload.nomEquipe) {
+                showAlert('Le nom est obligatoire.', 'danger');
+                btn.disabled = false; btn.innerHTML = '<i class="fas fa-save me-2"></i>Enregistrer l\'équipe';
+                return;
+            }
+
+            if (logoInput.files[0]) {
+                const reader = new FileReader();
+                reader.onload = async () => {
+                    payload.logo = reader.result;
+                    await sendRequest(payload);
+                };
+                reader.readAsDataURL(logoInput.files[0]);
+            } else {
+                await sendRequest(payload);
+            }
+        });
+
+        async function sendRequest(payload) {
+            const btn = document.getElementById('submitBtn');
+            try {
+                const res = await fetch('/api/equipes', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+                const data = await res.json();
+
+                if (res.ok) {
+                    showAlert('Félicitations ! L\'équipe a été enregistrée.', 'success');
+                    form.reset();
+                    logoPreview.src = 'images/placeholder-team.png';
+                } else {
+                    showAlert(data.message || 'Erreur technique.', 'danger');
+                }
+            } catch (err) {
+                showAlert('Erreur réseau.', 'danger');
+            } finally {
+                btn.disabled = false;
+                btn.innerHTML = '<i class="fas fa-save me-2"></i>Enregistrer l\'équipe';
+            }
+        }
+
+        // --- CHARGEMENT DES ÉQUIPES ---
+async function loadTeams() {
+    const tableBody = document.getElementById('teamsTableBody');
+    
+    try {
+        const res = await fetch('/api/equipes');
+        const teams = await res.json();
+
+        if (teams.length === 0) {
+            tableBody.innerHTML = '<tr><td colspan="6" class="text-center py-4">Aucune équipe enregistrée.</td></tr>';
+            return;
+        }
+
+        tableBody.innerHTML = teams.map(team => `
+    <tr>
+        <td>
+            <img src="${team.logo || 'images/placeholder-team.png'}" 
+                 alt="Logo" class="rounded-circle shadow-sm" 
+                 style="width: 45px; height: 45px; object-fit: cover;">
+        </td>
+        <td><strong class="text-primary">${team.nomEquipe}</strong></td>
+        <td><span class="badge bg-light text-dark">${team.ville || 'N/A'}</span></td>
+        <td>${team.coach || '<em>Non défini</em>'}</td>
+        <td class="text-center"><span class="badge rounded-pill bg-primary">${team.nombre_joueurs}</span></td>
+        <td class="text-end">
+            <div class="d-flex justify-content-end gap-2">
+                <button class="btn btn-sm btn-outline-info" onclick="viewTeamDetails(${JSON.stringify(team).replace(/"/g, '&quot;')})">
+                    <i class="fas fa-eye"></i>
+                </button>
+                <button class="btn btn-sm btn-outline-danger" onclick="deleteTeam(${team.id}, '${team.nomEquipe}')">
+                    <i class="fas fa-trash"></i>
+                </button>
+            </div>
+        </td>
+    </tr>
+`).join('');
+
+    } catch (err) {
+        tableBody.innerHTML = '<tr><td colspan="6" class="text-center text-danger">Erreur lors de la récupération des données.</td></tr>';
+    }
+}
+
+// --- SUPPRESSION D'UNE ÉQUIPE ---
+async function deleteTeam(id, name) {
+    if (confirm(`Voulez-vous vraiment supprimer l'équipe "${name}" ?`)) {
+        try {
+            const res = await fetch(`/api/equipes/${id}`, { method: 'DELETE' });
+            if (res.ok) {
+                loadTeams(); // Recharger la table
+                showAlert(`L'équipe ${name} a été supprimée.`, 'info');
+            }
+        } catch (err) {
+            showAlert('Erreur lors de la suppression.', 'danger');
+        }
+    }
+}
+
+function viewTeamDetails(team) {
+    // Remplissage des données dans le modal
+    document.getElementById('modalTeamLogo').src = team.logo || 'images/placeholder-team.png';
+    document.getElementById('modalTeamName').textContent = team.nomEquipe;
+    document.getElementById('modalTeamCity').textContent = team.ville || 'Ville non précisée';
+    document.getElementById('modalTeamCoach').textContent = team.coach || 'Non défini';
+    document.getElementById('modalTeamPresident').textContent = team.president || 'Non défini';
+    document.getElementById('modalTeamSize').textContent = team.nombre_joueurs + " joueurs";
+
+    // Ouverture du modal via Bootstrap
+    const myModal = new bootstrap.Modal(document.getElementById('teamModal'));
+    myModal.show();
+}
+// --- RECHERCHE TEMPS RÉEL ---
+document.getElementById('searchTeam').addEventListener('input', function(e) {
+    const term = e.target.value.toLowerCase();
+    const rows = document.querySelectorAll('#teamsTableBody tr');
+    
+    rows.forEach(row => {
+        const text = row.innerText.toLowerCase();
+        row.style.display = text.includes(term) ? '' : 'none';
+    });
+});
+
+// Charger la liste dès l'ouverture de la page
+document.addEventListener('DOMContentLoaded', loadTeams);
+
+        function showAlert(msg, type) {
+            alertEl.className = `alert alert-${type}`;
+            alertEl.textContent = msg;
+            alertEl.classList.remove('d-none');
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+    </script>
+    <div class="modal fade" id="teamModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content border-0 shadow-lg" style="border-radius: 20px;">
+            <div class="modal-header bg-primary text-white border-0" style="border-radius: 20px 20px 0 0;">
+                <h5 class="modal-title fw-bold">Fiche Équipe</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body text-center p-4">
+                <img id="modalTeamLogo" src="" class="rounded-circle shadow mb-3" style="width: 120px; height: 120px; object-fit: cover; border: 4px solid #f8f9fa;">
+                <h3 id="modalTeamName" class="fw-bold text-primary mb-1"></h3>
+                <p id="modalTeamCity" class="text-muted mb-4"></p>
+                
+                <div class="row g-3 text-start">
+                    <div class="col-6">
+                        <small class="text-muted d-block">Entraîneur</small>
+                        <span id="modalTeamCoach" class="fw-bold"></span>
+                    </div>
+                    <div class="col-6">
+                        <small class="text-muted d-block">Président</small>
+                        <span id="modalTeamPresident" class="fw-bold"></span>
+                    </div>
+                    <div class="col-6">
+                        <small class="text-muted d-block">Effectif</small>
+                        <span id="modalTeamSize" class="badge bg-primary"></span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+</html>

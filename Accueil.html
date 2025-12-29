@@ -1,0 +1,412 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <title>Association des Jeunes de Dubourg | Accueil</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700;800&display=swap" rel="stylesheet">
+
+  <style>
+    :root {
+      --primary: #120491;   /* Bleu AJB */
+      --secondary: #1e7e34; /* Vert Terrain */
+      --accent: #ffd700;    /* Or */
+      --dark: #1a1a1a;
+      --light: #f8fafc;
+    }
+
+    body {
+      padding-top: 70px;
+      background-color: var(--light);
+      color: var(--dark);
+      font-family: 'Inter', sans-serif;
+      line-height: 1.6;
+    }
+
+    /* ================= NAVBAR ================= */
+    .navbar {
+      background: var(--primary) !important;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+      padding: 15px 0;
+    }
+
+    .navbar-brand {
+      font-weight: 800;
+      letter-spacing: -0.5px;
+    }
+
+    .nav-link {
+      color: #ffffff !important;
+      font-weight: 500;
+      margin: 0 10px;
+      position: relative;
+      transition: all 0.3s ease;
+    }
+
+    .nav-link::after {
+      content: "";
+      position: absolute;
+      width: 0;
+      height: 2px;
+      bottom: -5px;
+      left: 0;
+      background-color: var(--secondary);
+      transition: width 0.3s ease;
+    }
+
+    .nav-link:hover::after, .nav-link.active::after {
+      width: 100%;
+    }
+
+    /* ================= HERO SECTION ================= */
+    .hero {
+      position: relative;
+      padding: 120px 0;
+      color: white;
+      text-align: center;
+      background: linear-gradient(rgba(18, 4, 145, 0.85), rgba(18, 4, 145, 0.7)),
+                  url("images/terrain.jpeg") center/cover no-repeat;
+      clip-path: polygon(0 0, 100% 0, 100% 90%, 0 100%);
+    }
+
+    .hero h1 {
+      font-size: clamp(2.5rem, 6vw, 4rem);
+      font-weight: 800;
+      margin-bottom: 20px;
+      text-shadow: 0 4px 10px rgba(0,0,0,0.3);
+    }
+
+    .hero p {
+      font-size: 1.25rem;
+      max-width: 800px;
+      margin: 0 auto 30px;
+      color: rgba(255,255,255,0.9);
+    }
+
+    /* ================= BOUTONS ================= */
+    .btn-primary {
+      background-color: var(--secondary);
+      border: none;
+      padding: 12px 30px;
+      font-weight: 700;
+      border-radius: 8px;
+      transition: transform 0.2s;
+    }
+
+    .btn-primary:hover {
+      background-color: #166329;
+      transform: translateY(-2px);
+    }
+
+    .btn-outline-light {
+      border: 2px solid white;
+      padding: 12px 30px;
+      font-weight: 700;
+      border-radius: 8px;
+    }
+
+    /* ================= CONTENU PRINCIPAL ================= */
+    .section-title {
+      font-weight: 800;
+      color: var(--primary);
+      margin-bottom: 40px;
+      position: relative;
+      display: inline-block;
+    }
+
+    .section-title::after {
+      content: "";
+      position: absolute;
+      width: 50%;
+      height: 4px;
+      background: var(--secondary);
+      bottom: -10px;
+      left: 0;
+    }
+
+    .info-card {
+      background: white;
+      padding: 30px;
+      border-radius: 15px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.05);
+      border-top: 5px solid var(--secondary);
+      height: 100%;
+    }
+
+    /* ================= CARTES JOUEURS ================= */
+    .player-card {
+      border: none;
+      border-radius: 20px;
+      overflow: hidden;
+      box-shadow: 0 15px 35px rgba(0,0,0,0.15);
+      transition: all 0.4s ease;
+    }
+
+    .player-card:hover {
+      transform: scale(1.03);
+    }
+
+    .card-img-top {
+      height: 500px; /* Taille conservée selon ta demande */
+      object-fit: cover;
+      object-position: center;
+    }
+
+    /* ================= FOOTER ================= */
+    footer {
+      background: var(--primary);
+      color: white;
+      padding: 50px 0 20px;
+      margin-top: 80px;
+    }
+
+    .footer-divider {
+      border-top: 1px solid rgba(255,255,255,0.1);
+      margin-top: 30px;
+      padding-top: 20px;
+    }
+
+    @media (max-width: 768px) {
+      .hero { padding: 80px 0; clip-path: none; }
+      .card-img-top { height: 350px; }
+    }
+    
+    /* Style de la barre de navigation */
+.navbar {
+  background: #120491 !important; /* Ton bleu AJB */
+  height: 75px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+  border-bottom: 3px solid #1e7e34; /* Ton vert terrain */
+}
+
+/* Conteneur des icônes */
+.nav-icons-group {
+  display: flex;
+  gap: 8px; /* Espace réduit pour mobile */
+}
+
+/* Style de chaque bouton icône */
+.nav-link-icon {
+  width: 42px;
+  height: 42px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 10px;
+  color: white !important;
+  background: rgba(255, 255, 255, 0.1);
+  transition: all 0.2s ease;
+  text-decoration: none;
+  font-size: 1.1rem;
+}
+
+/* Effet au survol ou si actif */
+.nav-link-icon:hover, .nav-link-icon.active {
+  background: #1e7e34; /* Vert au survol */
+  color: #ffd700 !important; /* Or */
+}
+
+/* Couleur spéciale pour la déconnexion */
+.nav-link-icon.text-danger:hover {
+  background: rgba(220, 53, 69, 0.2);
+}
+
+  </style>
+</head>
+
+<body>
+  
+<nav class="navbar fixed-top">
+  <div class="container d-flex justify-content-between align-items-center">
+    <a class="navbar-brand fw-bold text-white m-0" href="Accueil.html">⚽ AJDB</a>
+
+    <div class="nav-icons-group">
+      <a class="nav-link-icon" href="Accueil.html" title="Accueil">
+        <i class="fas fa-home"></i>
+      </a>
+      <a class="nav-link-icon" href="Tableau_Bord.html" title="Tableau de bord">
+        <i class="fas fa-chart-line"></i>
+      </a>
+      <a class="nav-link-icon" href="Enregistrer_Equipe.html" title="Équipes">
+        <i class="fas fa-shield-halved"></i>
+      </a>
+      <a class="nav-link-icon" href="Match.html" title="Matchs">
+        <i class="fas fa-stopwatch"></i>
+      </a>
+      <a href="#" id="logoutBtn" class="btn btn-danger">Quitter</a>
+        <i class="fas fa-sign-out-alt"></i> 
+      </a>
+    </div>
+  </div>
+</nav>
+
+
+<header class="hero">
+  <div class="container">
+    <h1>Association des Jeunes de Dubourg</h1>
+    <p>Le football comme vecteur de changement. Rejoignez une communauté passionnée au cœur de Limonade.</p>
+    <div class="d-flex justify-content-center gap-3">
+      <a href="Tableau_Bord.html" class="btn btn-primary shadow">Voir le Tableau de Bord</a>
+      <a href="Enregistrer_Equipe.html" class="btn btn-outline-light">Inscrire une Équipe</a>
+    </div>
+  </div>
+</header>
+
+<main class="container my-5">
+
+  <section class="row g-4 mb-5">
+    <div class="col-12">
+      <h2 class="section-title">Pourquoi nous rejoindre ?</h2>
+    </div>
+    
+    <div class="col-md-6 col-lg-3">
+      <div class="info-card">
+        <h5 class="fw-bold">🏃‍♂️ Santé</h5>
+        <p class="text-muted small">Amélioration de l'endurance, de la force et de l'agilité pour une vie saine.</p>
+      </div>
+    </div>
+    <div class="col-md-6 col-lg-3">
+      <div class="info-card">
+        <h5 class="fw-bold">🧠 Mental</h5>
+        <p class="text-muted small">Confiance en soi, gestion du stress et résilience face aux défis.</p>
+      </div>
+    </div>
+    <div class="col-md-6 col-lg-3">
+      <div class="info-card">
+        <h5 class="fw-bold">🤝 Social</h5>
+        <p class="text-muted small">Inclusion, amitié et respect des valeurs citoyennes sur le terrain.</p>
+      </div>
+    </div>
+    <div class="col-md-6 col-lg-3">
+      <div class="info-card">
+        <h5 class="fw-bold">📈 Futur</h5>
+        <p class="text-muted small">Ouverture vers des opportunités éducatives et professionnelles.</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="row mb-5 bg-white p-4 rounded shadow-sm">
+    <div class="col-12">
+      <h3 class="mb-4 fw-bold" style="color: var(--primary);">Notre Mission au Parc Toussaint Davlimar</h3>
+      <p>Le football est bien plus qu'un simple sport : c'est un terrain d'apprentissage et de transformation pour les jeunes de notre communauté. Notre association favorise l'inclusion et le lien intergénérationnel : les jeunes se font des amis, apprennent à travailler en équipe et à respecter les autres — coéquipiers, adversaires et arbitres.</p>
+      <p>Nous attachons une grande importance à l'apprentissage des règles de fair-play, au respect du corps par des bonnes pratiques et à la prévention des blessures. Chaque participant bénéficie d'un encadrement attentif et d'un réseau solidaire.</p>
+    </div>
+  </section>
+
+  <section class="row g-4">
+    <div class="col-12">
+      <h2 class="section-title">Nos Talents en Action</h2>
+    </div>
+
+    <div class="col-md-6">
+      <div class="card player-card">
+        <img src="images/joueur1.jpeg" class="card-img-top" alt="Entraînement AJB">
+        <div class="card-body bg-white text-center">
+          <span class="badge bg-success mb-2">Entraînement</span>
+          <h5 class="card-title fw-bold">Discipline & Travail</h5>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-md-6">
+      <div class="card player-card">
+        <img src="images/joueur2.jpeg" class="card-img-top" alt="Match AJB">
+        <div class="card-body bg-white text-center">
+          <span class="badge bg-primary mb-2">Compétition</span>
+          <h5 class="card-title fw-bold">Esprit d'Équipe</h5>
+        </div>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<footer>
+  <div class="container text-center">
+    <h5 class="fw-bold mb-3">Association des Jeunes de Dubourg</h5>
+    <p class="mb-1">📍 Parc Toussaint Davilmar — Dubourg, Limonade, Haïti</p>
+    <p class="small text-white-50">Email: contact@ajdbourg.ht | Tel: +509 42 17 80 54 / 37 40 88 73</p>
+    
+    <div class="footer-divider">
+      <small>© 2025 AJDB - Tous droits réservés.</small>
+    </div>
+  </div>
+</footer>
+<script>
+    // --- 1. PROTECTION DE L'ACCÈS ---
+    // Vérifie dès le chargement si l'utilisateur est passé par la page de connexion
+    if (localStorage.getItem('isLoggedIn') !== 'true') {
+        window.location.href = '/'; 
+    }
+
+    // --- 2. GESTION DE LA DÉCONNEXION ---
+    document.getElementById('logoutBtn').addEventListener('click', function(e) {
+        e.preventDefault(); 
+        
+        if (confirm("Voulez-vous vraiment vous déconnecter ?")) {
+            // Nettoyage complet du navigateur
+            localStorage.removeItem('isLoggedIn');
+            localStorage.removeItem('userRole');
+
+            // Appel au serveur pour détruire la session côté backend
+            // Une fois la session détruite, le serveur redirigera vers '/'
+            window.location.href = '/api/logout';
+        }
+    });
+
+    // --- 3. UTILITAIRE POUR LES ACTIONS (Buteurs, Matchs, etc.) ---
+    /**
+     * Cette fonction permet d'exécuter tes requêtes (Supprimer, Recalculer, etc.)
+     * et affiche automatiquement "Vous n'avez pas ce droit" si l'utilisateur n'est pas admin.
+     */
+    async function executeAction(url, method = 'GET', body = null) {
+        try {
+            const options = { method };
+            if (body) {
+                options.headers = { 'Content-Type': 'application/json' };
+                options.body = JSON.stringify(body);
+            }
+
+            const response = await fetch(url, options);
+            const data = await response.json();
+
+            // GESTION DU MESSAGE D'ERREUR POUR LES NON-ADMINS
+            if (response.status === 403) {
+                alert("🚫 Action refusée : " + (data.message || "Vous n'avez pas les droits nécessaires."));
+                return null;
+            }
+
+            if (!response.ok) {
+                throw new Error(data.message || "Une erreur est survenue");
+            }
+
+            return data; // Retourne les données si tout est OK
+        } catch (error) {
+            console.error("Erreur API:", error);
+            alert("Erreur: " + error.message);
+            return null;
+        }
+    }
+
+    // --- EXEMPLE D'UTILISATION (pour tes autres boutons) ---
+    // Au lieu de faire un fetch classique, tu utiliseras :
+    /*
+       async function supprimerUnMatch(id) {
+           const result = await executeAction(`/api/matchs/${id}`, 'DELETE');
+           if (result) {
+               alert("Match supprimé !");
+               location.reload();
+           }
+       }
+    */
+
+</script>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
