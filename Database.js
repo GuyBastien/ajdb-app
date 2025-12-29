@@ -10,6 +10,10 @@ const db = mysql.createConnection({
   ssl: { rejectUnauthorized: false }
 });
 
+// Promisifier les requêtes
+const util = require('util');
+db.query = util.promisify(db.query);
+
 db.connect(err => {
   if (err) {
     console.error('Erreur connexion MySQL:', err);
