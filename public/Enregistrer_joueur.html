@@ -186,10 +186,9 @@
 
         // --- ACTIONS ---
         function viewDetails(p) {
-            const logoPath = team.logo ? `images/teams/${team.logo}` : 'images/placeholder-team.png';
+            document.getElementById('modalTeamLogo').src = team.logo || '/images/placeholder-team.png';
     
-        document.getElementById('modalTeamLogo').src = logoPath;
-        document.getElementById('modalTeamName').textContent = team.nomEquipe;
+            document.getElementById('modalTeamName').textContent = team.nomEquipe;
             const body = document.getElementById('playerModalBody');
             const pic = p.photo || '/images/placeholder-player.png';
             body.innerHTML = `
