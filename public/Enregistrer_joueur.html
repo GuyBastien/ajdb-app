@@ -158,32 +158,45 @@
 
         // --- CHARGEMENT JOUEURS ---
         async function loadPlayers() {
-            const tbody = document.querySelector('#playersTable tbody');
-            const search = (document.getElementById('searchPlayer').value || '').toLowerCase();
-            try {
-                const res = await fetch('/api/joueurs');
-                const players = await res.json();
-                const filtered = players.filter(p => (p.nom + ' ' + p.prenom + ' ' + (p.team_name || '')).toLowerCase().includes(search));
-                tbody.innerHTML = '';
-                filtered.forEach((p, i) => {
-                    const pic = p.photo || '/images/placeholder-player.png';
-                    tbody.insertAdjacentHTML('beforeend', `
-                        <tr>
-                            <td class="ps-3 text-muted">${i+1}</td>
-                            <td><img src="${pic}" class="img-table"></td>
-                            <td class="fw-bold">${p.prenom} ${p.nom.toUpperCase()}</td>
-                            <td><span class="text-primary fw-medium">${p.team_name || '—'}</span></td>
-                            <td><span class="badge-poste">${p.poste || '—'}</span></td>
-                            <td class="text-center fw-bold">${p.numero ?? '—'}</td>
-                            <td class="text-end pe-3">
-                                <button class="btn btn-sm btn-outline-info border-0 me-1" onclick='viewDetails(${JSON.stringify(p)})'><i class="fas fa-eye"></i></button>
-                                <button class="btn btn-sm btn-outline-danger border-0" onclick="deletePlayer(${p.Id_joueur})"><i class="fas fa-trash"></i></button>
-                            </td>
-                        </tr>
-                    `);
-                });
-            } catch (err) { tbody.innerHTML = '<tr><td colspan="7" class="text-center text-danger">Erreur de chargement.</td></tr>'; }
-        }
+    const tbody = document.querySelector('#playersTable tbody');
+    const search = (document.getElementById('searchPlayer').value || '').toLowerCase();
+    try {
+        const res = await fetch('/api/joueurs');
+        const players = await res.json();
+        const filtered = players.filter(p => (p.nom + ' ' + p.prenom + ' ' + (p.team_name || '')).toLowerCase().includes(search));
+        
+        tbody.innerHTML = '';
+        filtered.forEach((p, i) => {
+            // CORRECTION DU CHEMIN D'IMAGE ICI
+            let pic = '/images/placeholder-player.png'; // Image par défaut
+            if (p.photo) {
+                if (p.photo.startsWith('data:')) {
+                    pic = p.photo; // C'est une image en Base64
+                } else {
+                    // On s'assure que le chemin commence par un /
+                    pic = p.photo.startsWith('/') ? p.photo : '/' + p.photo;
+                }
+            }
+
+            tbody.insertAdjacentHTML('beforeend', `
+                <tr>
+                    <td class="ps-3 text-muted">${i+1}</td>
+                    <td><img src="${pic}" class="img-table" onerror="this.src='/images/placeholder-player.png'"></td>
+                    <td class="fw-bold">${p.prenom} ${p.nom.toUpperCase()}</td>
+                    <td><span class="text-primary fw-medium">${p.team_name || '—'}</span></td>
+                    <td><span class="badge-poste">${p.poste || '—'}</span></td>
+                    <td class="text-center fw-bold">${p.numero ?? '—'}</td>
+                    <td class="text-end pe-3">
+                        <button class="btn btn-sm btn-outline-info border-0 me-1" onclick='viewDetails(${JSON.stringify(p)})'><i class="fas fa-eye"></i></button>
+                        <button class="btn btn-sm btn-outline-danger border-0" onclick="deletePlayer(${p.Id_joueur})"><i class="fas fa-trash"></i></button>
+                    </td>
+                </tr>
+            `);
+        });
+    } catch (err) { 
+        tbody.innerHTML = '<tr><td colspan="7" class="text-center text-danger">Erreur de chargement.</td></tr>'; 
+    }
+}
 
         // --- DÉTAILS MODAL ---
         function viewDetails(p) {
