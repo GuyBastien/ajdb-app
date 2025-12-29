@@ -1,10 +1,13 @@
+require('dotenv').config();
 const mysql = require('mysql');
 
-const db = mysql.createConnection(process.env.MYSQL_URL || {
-    host: "localhost",
-    user: "root",
-    password: "",
-    database: "Bastien030#"
+const db = mysql.createConnection({
+  host: process.env.DB_HOST,
+  port: process.env.DB_PORT,
+  user: process.env.DB_USER,
+  password: process.env.DB_PASSWORD,
+  database: process.env.DB_NAME,
+  ssl: { rejectUnauthorized: false }
 });
 
 db.connect(err => {
@@ -12,15 +15,7 @@ db.connect(err => {
     console.error('Erreur connexion MySQL:', err);
     return;
   }
-  console.log('Connecté à MySQL');
+  console.log('Connecté à la base Railway !');
 });
 
 module.exports = db;
-
-//Ctrl + Shift + ~ pour ouvrir le terminal intégré dans VS Code
-//npm install mysql pour installer le package mysql
-//node Application/Database.js pour tester la connexion
-//npm install dotenv pour installer le package dotenv
-//Créer un fichier .env à la racine du projet pour stocker les variables d'environnement
-//Ajouter .env dans le fichier .gitignore pour ne pas versionner les variables sensibles
-//Modifier Application/Database.js pour utiliser les variables d'environnement
