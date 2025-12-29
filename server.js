@@ -892,27 +892,28 @@ app.get('/api/classement', async (req, res) => {
   }
 });
 
-/* ------------------ START SERVER ------------------ */
+// --- CODE D'AUTO-CRÉATION DES TABLES ---
+const sqlPath = path.join(__dirname, 'Footdubourg.sql');
+
+if (fs.existsSync(sqlPath)) {
+    const sqlFile = fs.readFileSync(sqlPath, 'utf8');
+    const queries = sqlFile.split(';')
+        .map(q => q.trim())
+        .filter(q => q !== "" && !q.startsWith('USE') && !q.startsWith('CREATE DATABASE'));
+
+    // On utilise la connexion 'db' déjà établie dans ton fichier Database.js
+    queries.forEach(q => {
+        db.query(q, (dbErr) => {
+            if (dbErr && dbErr.code !== 'ER_TABLE_EXISTS_ERROR') {
+                // On ne loggue que les vraies erreurs, pas celles des tables déjà créées
+                console.log("Info création table:", dbErr.message);
+            }
+        });
+    });
+    console.log("Vérification/Migration SQL terminée.");
+}
+
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
     console.log(`Serveur démarré sur le port ${PORT}`);
 });
-// --- CODE D'AUTO-CRÉATION DES TABLES ---
-const sqlPath = path.join(__dirname, 'Footdubourg.sql');
-if (fs.existsSync(sqlPath)) {
-    const sqlFile = fs.readFileSync(sqlPath, 'utf8');
-    const queries = sqlFile.split(';').map(q => q.trim()).filter(q => q !== "" && !q.startsWith('USE') && !q.startsWith('CREATE DATABASE'));
-    
-    db.connect((err) => {
-        if (!err) {
-            queries.forEach(q => {
-                db.query(q, (dbErr) => {
-                    if (dbErr && dbErr.code !== 'ER_TABLE_EXISTS_ERROR') {
-                        // Table déjà là, on ignore
-                    }
-                });
-            });
-            console.log("Migration SQL terminée.");
-        }
-    });
-}
