@@ -6,7 +6,7 @@ const fs = require('fs');
 const session = require('express-session'); 
 
 // On récupère db ET query proprement depuis ton dossier models
-const { db, query } = require('./models/db'); 
+const { query } = require('./models/db');
 
 const app = express();
 const port = process.env.PORT || 3000;
