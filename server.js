@@ -165,7 +165,8 @@ app.get('/Accueil.html', (req, res) => {
 
 app.post('/api/register', async (req, res) => {
   try {
-    const { username, password } = req.body;
+    const username = req.body.teamName;  // <-- récupère teamName
+    const password = req.body.password;
 
     if (!username || !password) {
       return res.status(400).json({ success: false, message: "Champs manquants" });
@@ -178,10 +179,7 @@ app.post('/api/register', async (req, res) => {
     );
 
     if (exist.length > 0) {
-      return res.status(409).json({
-        success: false,
-        message: "Nom d'utilisateur déjà utilisé"
-      });
+      return res.status(409).json({ success: false, message: "Nom d'utilisateur déjà utilisé" });
     }
 
     // Insertion utilisateur NORMAL
@@ -197,6 +195,7 @@ app.post('/api/register', async (req, res) => {
     res.status(500).json({ success: false, message: "Erreur lors de la création du compte" });
   }
 });
+
 
 /* ------------------ EQUIPES ------------------ */
 
