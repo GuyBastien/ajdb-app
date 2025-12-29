@@ -5,6 +5,10 @@ const path = require('path');
 const fs = require('fs');
 const session = require('express-session');
 
+// Pour le hachage des mots de passe
+const bcrypt = require('bcrypt');
+
+// Importer la fonction query depuis le module db.js
 const { query } = require('./models/db');
 
 const app = express();
@@ -119,8 +123,8 @@ app.get('/', (req, res) => {
 
 // 2. Route pour traiter le formulaire 
 
+//de login
 
-const bcrypt = require('bcrypt');
 
 app.post('/api/login', async (req, res) => {
   try {
@@ -153,7 +157,7 @@ app.post('/api/login', async (req, res) => {
 });
 
 
-
+// Route de déconnexion
 app.get('/api/logout', (req, res) => {
     req.session.destroy();
     res.redirect('/');
@@ -164,7 +168,7 @@ app.get('/Accueil.html', (req, res) => {
   res.sendFile(path.join(__dirname, 'Accueil.html'));
 });
 
-const bcrypt = require('bcrypt');
+// 4. Route pour l'inscription (register)
 
 app.post('/api/register', async (req, res) => {
   try {
