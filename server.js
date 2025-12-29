@@ -164,27 +164,40 @@ app.get('/Accueil.html', (req, res) => {
 });
 
 app.post('/api/register', async (req, res) => {
-    try {
-        const { teamName, email, password } = req.body;
+  try {
+    const { username, password } = req.body;
 
-        // Vérifier si l'utilisateur existe déjà
-        const existing = await query('SELECT * FROM utilisateurs WHERE nom_utilisateur = ? OR email = ?', [teamName, email]);
-        if (existing.length > 0) {
-            return res.status(400).json({ message: "Le nom d'utilisateur ou l'email est déjà utilisé." });
-        }
-
-        // Insérer dans la table utilisateurs
-        await query(
-            'INSERT INTO utilisateurs (nom_utilisateur, email, mot_de_passe) VALUES (?, ?, ?)', 
-            [teamName, email, password]
-        );
-
-        res.json({ success: true, message: "Utilisateur créé avec succès !" });
-    } catch (err) {
-        console.error(err);
-        res.status(500).json({ message: "Erreur lors de la création du compte." });
+    if (!username || !password) {
+      return res.status(400).json({ success: false, message: "Champs manquants" });
     }
+
+    // Vérifier si l'utilisateur existe déjà
+    const exist = await query(
+      "SELECT id FROM utilisateurs WHERE nom_utilisateur = ?",
+      [username]
+    );
+
+    if (exist.length > 0) {
+      return res.status(409).json({
+        success: false,
+        message: "Nom d'utilisateur déjà utilisé"
+      });
+    }
+
+    // Insertion utilisateur NORMAL
+    await query(
+      "INSERT INTO utilisateurs (nom_utilisateur, mot_de_passe) VALUES (?, ?)",
+      [username, password]
+    );
+
+    res.json({ success: true, message: "Compte créé avec succès" });
+
+  } catch (err) {
+    console.error("Erreur register:", err);
+    res.status(500).json({ success: false, message: "Erreur lors de la création du compte" });
+  }
 });
+
 /* ------------------ EQUIPES ------------------ */
 
 // GET /api/equipes
