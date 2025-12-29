@@ -3,15 +3,13 @@ const mariadb = require('mariadb');
 
 const pool = mariadb.createPool({
   host: process.env.DB_HOST,
-  port: process.env.DB_PORT,
+  port: parseInt(process.env.DB_PORT) || 3306,
   user: process.env.DB_USER,
   password: process.env.DB_PASSWORD,
   database: process.env.DB_NAME,
   ssl: { rejectUnauthorized: false },
-  connectionLimit: 10,        // Augmenté à 10
-  connectTimeout: 20000,      // 20 secondes pour laisser le temps à Railway
-  acquireTimeout: 20000,
-  idleTimeout: 30000          // Ferme les connexions inutilisées après 30s
+  connectionLimit: 10,
+  acquireTimeout: 30000 
 });
 
 async function query(sql, params) {
@@ -19,13 +17,16 @@ async function query(sql, params) {
   try {
     conn = await pool.getConnection();
     const res = await conn.query(sql, params);
-    return res;
+    // Transforme les résultats pour être sûr qu'ils passent en JSON (gestion BigInt)
+    return JSON.parse(JSON.stringify(res, (key, value) =>
+      typeof value === 'bigint' ? value.toString() : value
+    ));
   } catch (err) {
-    console.error("Erreur SQL détaillée :", err);
+    console.error("Erreur SQL :", err.message);
     throw err;
   } finally {
     if (conn) conn.release();
   }
 }
 
-module.exports = { pool, query };
+module.exports = { query, pool };
