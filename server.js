@@ -263,7 +263,7 @@ app.post('/api/equipes',verifierAdmin, async (req, res) => {
       if (matches) {
         const ext = matches[2] === 'jpeg' ? 'jpg' : matches[2];
         const buffer = Buffer.from(matches[3], 'base64');
-        const imagesDir = path.join(__dirname,'public', 'images', 'teams');
+        const imagesDir = path.join(__dirname, 'images', 'teams');
         if (!fs.existsSync(imagesDir)) fs.mkdirSync(imagesDir, { recursive: true });
         const filename = `team_${id}.${ext}`;
         fs.writeFileSync(path.join(imagesDir, filename), buffer);
@@ -461,7 +461,7 @@ app.post('/api/joueurs',verifierAdmin, async (req, res) => {
       if (matches) {
         const ext = matches[2] === 'jpeg' ? 'jpg' : matches[2];
         const buffer = Buffer.from(matches[3], 'base64');
-        const imagesDir = path.join(__dirname,'public', 'images', 'players');
+        const imagesDir = path.join(__dirname, 'images', 'players');
         if (!fs.existsSync(imagesDir)) fs.mkdirSync(imagesDir, { recursive: true });
         const filename = `player_${id}.${ext}`;
         fs.writeFileSync(path.join(imagesDir, filename), buffer);
