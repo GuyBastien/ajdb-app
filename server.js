@@ -121,33 +121,36 @@ app.post('/api/login', async (req, res) => {
     try {
         const { username, password } = req.body;
 
-        // Récupérer l'utilisateur ET son rôle
-        const rows = await db.query(
-            'SELECT id, nom_utilisateur, role FROM utilisateurs WHERE nom_utilisateur = ? AND mot_de_passe = ?', 
+        // Utilisation de la fonction query (majuscule/minuscule respectée)
+        // Note : On utilise * pour éviter l'erreur si une colonne manque
+        const rows = await query(
+            'SELECT * FROM utilisateurs WHERE nom_utilisateur = ? AND mot_de_passe = ?', 
             [username, password]
         );
 
         if (rows.length > 0) {
+            const user = rows[0];
             // ON ENREGISTRE DANS LA SESSION
             req.session.user = {
-                id: rows[0].id,
-                username: rows[0].nom_utilisateur,
-                role: rows[0].role
+                id: user.id || user.Id_utilisateur, // accepte id ou Id_utilisateur
+                username: user.nom_utilisateur,
+                role: user.role || 'admin' // par défaut admin si la colonne est vide
             };
 
             res.json({ 
                 success: true, 
-                role: rows[0].role,
+                role: req.session.user.role,
                 redirect: 'Accueil.html' 
             });
         } else {
             res.status(401).json({ success: false, message: "Identifiants incorrects." });
         }
     } catch (err) {
-        console.error("Erreur serveur:", err);  // <-- affiche l’erreur pour debug
-        res.status(500).json({ message: "Erreur serveur" });
+        console.error("ERREUR LOGIN DETAILLEE:", err); 
+        res.status(500).json({ success: false, message: "Erreur serveur lors de la connexion." });
     }
 });
+
 
 
 app.get('/api/logout', (req, res) => {
