@@ -897,3 +897,22 @@ const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
     console.log(`Serveur démarré sur le port ${PORT}`);
 });
+// --- CODE D'AUTO-CRÉATION DES TABLES ---
+const sqlPath = path.join(__dirname, 'Footdubourg.sql');
+if (fs.existsSync(sqlPath)) {
+    const sqlFile = fs.readFileSync(sqlPath, 'utf8');
+    const queries = sqlFile.split(';').map(q => q.trim()).filter(q => q !== "" && !q.startsWith('USE') && !q.startsWith('CREATE DATABASE'));
+    
+    db.connect((err) => {
+        if (!err) {
+            queries.forEach(q => {
+                db.query(q, (dbErr) => {
+                    if (dbErr && dbErr.code !== 'ER_TABLE_EXISTS_ERROR') {
+                        // Table déjà là, on ignore
+                    }
+                });
+            });
+            console.log("Migration SQL terminée.");
+        }
+    });
+}
