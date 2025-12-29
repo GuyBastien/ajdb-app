@@ -124,7 +124,7 @@
                         <div class="row g-4">
                             <div class="col-md-4 text-center border-end">
                                 <div class="logo-container mb-3">
-                                    <img id="logoPreview" class="logo-preview" src="images/placeholder-team.png" alt="Aperçu">
+                                    <img id="logoPreview" class="logo-preview" src="/images/placeholder-team.png" alt="Aperçu">
                                 </div>
                                 <label for="logo" class="btn btn-upload btn-sm">
                                     <i class="fas fa-camera me-2"></i>Choisir un logo
@@ -281,7 +281,7 @@
                 if (res.ok) {
                     showAlert('Félicitations ! L\'équipe a été enregistrée.', 'success');
                     form.reset();
-                    logoPreview.src = 'images/placeholder-team.png';
+                    logoPreview.src = '/images/placeholder-team.png';
                 } else {
                     showAlert(data.message || 'Erreur technique.', 'danger');
                 }
@@ -309,7 +309,7 @@ async function loadTeams() {
         tableBody.innerHTML = teams.map(team => `
     <tr>
         <td>
-            <img src="${team.logo || 'images/placeholder-team.png'}" 
+            <img src="${team.logo || '/images/placeholder-team.png'}" 
                  alt="Logo" class="rounded-circle shadow-sm" 
                  style="width: 45px; height: 45px; object-fit: cover;">
         </td>
@@ -352,7 +352,7 @@ async function deleteTeam(id, name) {
 
 function viewTeamDetails(team) {
     // Remplissage des données dans le modal
-    document.getElementById('modalTeamLogo').src = team.logo || 'images/placeholder-team.png';
+    document.getElementById('modalTeamLogo').src = team.logo || '/images/placeholder-team.png';
     document.getElementById('modalTeamName').textContent = team.nomEquipe;
     document.getElementById('modalTeamCity').textContent = team.ville || 'Ville non précisée';
     document.getElementById('modalTeamCoach').textContent = team.coach || 'Non défini';
