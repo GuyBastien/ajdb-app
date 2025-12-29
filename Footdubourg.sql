@@ -1,5 +1,3 @@
-CREATE DATABASE IF NOT EXISTS footdubourg;
-USE footdubourg;
 
 -- 1. Table EQUIPES
 CREATE TABLE `equipes` (
