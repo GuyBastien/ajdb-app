@@ -29,8 +29,8 @@ app.use(session({
     }
 }));
 
-// Static (TES FICHIERS SONT DANS LE MÊME DOSSIER)
-app.use(express.static(path.join(__dirname)));
+// Static (TES FICHIERS SONT DANS LE DOSSIER PUBLIC)
+app.use(express.static(path.join(__dirname, 'public')));
 
 // Logger
 app.use((req, res, next) => {
@@ -118,7 +118,8 @@ async function canStartMatch(e1, e2, minPlayers = 7) {
 
 // 1. On affiche la connexion en premier
 app.get('/', (req, res) => {
-  res.sendFile(path.join(__dirname, 'Page_connexion.html'));
+  // dans le dossier public
+  res.sendFile(path.join(__dirname, 'public', 'Page_connexion.html'));
 });
 
 // 2. Route pour traiter le formulaire 
@@ -165,7 +166,7 @@ app.get('/api/logout', (req, res) => {
 
 // 3. On garde l'accès à l'accueil via son nom de fichier
 app.get('/Accueil.html', (req, res) => {
-  res.sendFile(path.join(__dirname, 'Accueil.html'));
+  res.sendFile(path.join(__dirname,'public', 'Accueil.html'));
 });
 
 // 4. Route pour l'inscription (register)
@@ -262,7 +263,7 @@ app.post('/api/equipes',verifierAdmin, async (req, res) => {
       if (matches) {
         const ext = matches[2] === 'jpeg' ? 'jpg' : matches[2];
         const buffer = Buffer.from(matches[3], 'base64');
-        const imagesDir = path.join(__dirname, 'images', 'teams');
+        const imagesDir = path.join(__dirname,'public', 'images', 'teams');
         if (!fs.existsSync(imagesDir)) fs.mkdirSync(imagesDir, { recursive: true });
         const filename = `team_${id}.${ext}`;
         fs.writeFileSync(path.join(imagesDir, filename), buffer);
@@ -460,7 +461,7 @@ app.post('/api/joueurs',verifierAdmin, async (req, res) => {
       if (matches) {
         const ext = matches[2] === 'jpeg' ? 'jpg' : matches[2];
         const buffer = Buffer.from(matches[3], 'base64');
-        const imagesDir = path.join(__dirname, 'images', 'players');
+        const imagesDir = path.join(__dirname,'public', 'images', 'players');
         if (!fs.existsSync(imagesDir)) fs.mkdirSync(imagesDir, { recursive: true });
         const filename = `player_${id}.${ext}`;
         fs.writeFileSync(path.join(imagesDir, filename), buffer);
