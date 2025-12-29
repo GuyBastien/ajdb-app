@@ -309,10 +309,10 @@ async function loadTeams() {
         tableBody.innerHTML = teams.map(team => `
     <tr>
         <td>
-            <img src="${team.logo || '/images/placeholder-team.png'}" 
-                 alt="Logo" class="rounded-circle shadow-sm" 
-                 style="width: 45px; height: 45px; object-fit: cover;">
-        </td>
+    <img src="${team.logo ? `images/teams/${team.logo}` : 'images/placeholder-team.png'}" 
+         alt="Logo" class="rounded-circle shadow-sm" 
+         style="width: 45px; height: 45px; object-fit: cover;">
+   </td>
         <td><strong class="text-primary">${team.nomEquipe}</strong></td>
         <td><span class="badge bg-light text-dark">${team.ville || 'N/A'}</span></td>
         <td>${team.coach || '<em>Non défini</em>'}</td>
