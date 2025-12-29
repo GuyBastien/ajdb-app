@@ -3,43 +3,37 @@ const express = require('express');
 const bodyParser = require('body-parser');
 const path = require('path');
 const fs = require('fs');
-const session = require('express-session'); 
+const session = require('express-session');
 
-// On récupère db ET query proprement depuis ton dossier models
 const { query } = require('./models/db');
 
 const app = express();
 const port = process.env.PORT || 3000;
 
+// Body parser (OBLIGATOIRE)
+app.use(bodyParser.json({ limit: '5mb' }));
+app.use(bodyParser.urlencoded({ extended: true }));
 
-
-
-// --- CONFIGURATION SESSION ---
+// Session
 app.use(session({
-    secret: 'footdubourg-2025!', // Change ceci pour plus de sécurité
+    secret: 'footdubourg-2025!',
     resave: false,
     saveUninitialized: false,
-    cookie: { secure: false, maxAge: 24 * 60 * 60 * 1000 } // Session de 24h
+    cookie: {
+        secure: false,
+        maxAge: 24 * 60 * 60 * 1000
+    }
 }));
 
-// Middleware
-app.use(bodyParser.json({ limit: '5mb' }));
-app.use(express.static(__dirname));
+// Static (TES FICHIERS SONT DANS LE MÊME DOSSIER)
+app.use(express.static(path.join(__dirname)));
 
-// --- MIDDLEWARE DE PROTECTION ADMIN ---
-const verifierAdmin = (req, res, next) => {
-    if (req.session.user && req.session.user.role === 'admin') {
-        next(); // C'est Admin1 ou Admin2, on laisse passer
-    } else {
-        res.status(403).json({ success: false, message: "Accès interdit : Réservé aux administrateurs." });
-    }
-};
-
-// Logging
+// Logger
 app.use((req, res, next) => {
-  console.log(new Date().toISOString(), req.method, req.path);
-  next();
+    console.log(new Date().toISOString(), req.method, req.path);
+    next();
 });
+
 
 
 /* ------------------ Helpers: buteurs (view/table) detection & fallback table ------------------ */
