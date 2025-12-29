@@ -114,13 +114,15 @@ app.get('/', (req, res) => {
   res.sendFile(path.join(__dirname, 'Page_connexion.html'));
 });
 
-// 2. Route pour traiter le formulaire de connexion
+// 2. Route pour traiter le formulaire 
+
+
 app.post('/api/login', async (req, res) => {
     try {
         const { username, password } = req.body;
 
         // Récupérer l'utilisateur ET son rôle
-        const rows = await query(
+        const rows = await db.query(
             'SELECT id, nom_utilisateur, role FROM utilisateurs WHERE nom_utilisateur = ? AND mot_de_passe = ?', 
             [username, password]
         );
@@ -142,9 +144,11 @@ app.post('/api/login', async (req, res) => {
             res.status(401).json({ success: false, message: "Identifiants incorrects." });
         }
     } catch (err) {
+        console.error("Erreur serveur:", err);  // <-- affiche l’erreur pour debug
         res.status(500).json({ message: "Erreur serveur" });
     }
 });
+
 
 app.get('/api/logout', (req, res) => {
     req.session.destroy();
