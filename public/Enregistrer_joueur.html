@@ -48,7 +48,7 @@
                     <div class="row">
                         <div class="col-md-3 text-center border-end">
                             <div class="photo-container mb-3">
-                                <img id="photoPreview" class="photo-preview" src="images/placeholder-player.png" alt="Aperçu">
+                                <img id="photoPreview" class="photo-preview" src="/images/placeholder-player.png" alt="Aperçu">
                             </div>
                             <label for="photo" class="btn btn-outline-primary btn-sm w-100 mb-2"><i class="fas fa-image me-2"></i>Photo</label>
                             <input id="photo" type="file" accept="image/*" class="d-none">
@@ -165,7 +165,7 @@
                 const filtered = players.filter(p => (p.nom + ' ' + p.prenom + ' ' + (p.team_name || '')).toLowerCase().includes(search));
                 tbody.innerHTML = '';
                 filtered.forEach((p, i) => {
-                    const pic = p.photo || 'images/placeholder-player.png';
+                    const pic = p.photo || '/images/placeholder-player.png';
                     tbody.insertAdjacentHTML('beforeend', `
                         <tr>
                             <td class="ps-3 text-muted">${i+1}</td>
@@ -187,7 +187,7 @@
         // --- ACTIONS ---
         function viewDetails(p) {
             const body = document.getElementById('playerModalBody');
-            const pic = p.photo || 'images/placeholder-player.png';
+            const pic = p.photo || '/images/placeholder-player.png';
             body.innerHTML = `
                 <img src="${pic}" class="rounded-circle mb-3 shadow-sm" style="width:100px; height:100px; object-fit:cover; border:3px solid #f8f9fa;">
                 <h4 class="fw-bold mb-0">${p.prenom} ${p.nom.toUpperCase()}</h4>
@@ -228,7 +228,7 @@
                 if (res.ok) {
                     alertEl.className = "alert alert-success"; alertEl.textContent = "Joueur enregistré !";
                     alertEl.classList.remove('d-none');
-                    e.target.reset(); photoPreview.src = 'images/placeholder-player.png';
+                    e.target.reset(); photoPreview.src = '/images/placeholder-player.png';
                     loadPlayers();
                 }
             } catch (err) { alert('Erreur réseau'); }

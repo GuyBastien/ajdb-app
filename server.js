@@ -213,7 +213,7 @@ app.post('/api/register', async (req, res) => {
     // 6. Insertion du nouvel utilisateur
     await query(
       "INSERT INTO utilisateurs (nom_utilisateur, mot_de_passe, role) VALUES (?, ?, ?)",
-      [username, hashedPassword, 'admin']
+      [username, hashedPassword, 'user']
     );
 
     // 7. Réponse de succès
@@ -267,7 +267,7 @@ app.post('/api/equipes',verifierAdmin, async (req, res) => {
         if (!fs.existsSync(imagesDir)) fs.mkdirSync(imagesDir, { recursive: true });
         const filename = `team_${id}.${ext}`;
         fs.writeFileSync(path.join(imagesDir, filename), buffer);
-        const publicPath = `images/teams/${filename}`;
+        const publicPath = `/images/teams/${filename}`;
         await query('UPDATE equipes SET logo = ? WHERE ID_Equipe = ?', [publicPath, id]);
       }
     }
@@ -467,7 +467,7 @@ app.post('/api/joueurs',verifierAdmin, async (req, res) => {
         fs.writeFileSync(path.join(imagesDir, filename), buffer);
         const colCheck = await query("SELECT COLUMN_NAME FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = 'joueurs' AND COLUMN_NAME = 'photo'");
         if (!colCheck.length) await query("ALTER TABLE joueurs ADD COLUMN photo VARCHAR(255) NULL");
-        await query('UPDATE joueurs SET photo = ? WHERE Id_joueur = ?', [`images/players/${filename}`, id]);
+        await query('UPDATE joueurs SET photo = ? WHERE Id_joueur = ?', [`/images/players/${filename}`, id]);
       }
     }
 
