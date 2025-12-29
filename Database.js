@@ -11,8 +11,9 @@ const db = mysql.createConnection({
 });
 
 // Promisifier les requêtes
+// Promisifier les requêtes correctement
 const util = require('util');
-db.query = util.promisify(db.query);
+const query = util.promisify(db.query).bind(db);
 
 db.connect(err => {
   if (err) {
@@ -22,4 +23,5 @@ db.connect(err => {
   console.log('Connecté à la base Railway !');
 });
 
-module.exports = db;
+// Exporte à la fois la connexion et la fonction query promise
+module.exports = { db, query };

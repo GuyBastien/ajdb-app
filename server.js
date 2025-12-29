@@ -1,11 +1,17 @@
+require('dotenv').config();
 const express = require('express');
 const bodyParser = require('body-parser');
 const path = require('path');
 const fs = require('fs');
 const session = require('express-session'); 
-const db = require('./Database'); 
+
+// On récupère db ET query proprement depuis ton dossier models
+const { db, query } = require('./models/db'); 
+
 const app = express();
 const port = process.env.PORT || 3000;
+
+
 
 
 // --- CONFIGURATION SESSION ---
@@ -35,15 +41,6 @@ app.use((req, res, next) => {
   next();
 });
 
-// Query helper
-function query(sql, params = []) {
-    return new Promise((resolve, reject) => {
-        db.query(sql, params, (err, results) => {
-            if (err) return reject(err);
-            resolve(results);
-        });
-    });
-}
 
 /* ------------------ Helpers: buteurs (view/table) detection & fallback table ------------------ */
 
