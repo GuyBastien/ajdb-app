@@ -50,6 +50,18 @@ async function isButeursView() {
   return _buteursIsView;
 }
 
+// --- MIDDLEWARE DE PROTECTION ADMIN ---
+const verifierAdmin = (req, res, next) => {
+    if (req.session.user && req.session.user.role === 'admin') {
+        next();
+    } else {
+        res.status(403).json({
+            success: false,
+            message: "Accès interdit : administrateur requis"
+        });
+    }
+};
+
 // ensure a physical table buteurs_real exists for writes if original buteurs is a VIEW
 async function ensureButuersReal() {
   // create table if not exists
