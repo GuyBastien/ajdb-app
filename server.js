@@ -120,21 +120,19 @@ app.get('/', (req, res) => {
 app.post('/api/login', async (req, res) => {
     try {
         const { username, password } = req.body;
-
-        // Utilisation de la fonction query (majuscule/minuscule respectée)
-        // Note : On utilise * pour éviter l'erreur si une colonne manque
+        
+        // On utilise la fonction query (avec Promise) définie plus haut dans ton code
         const rows = await query(
             'SELECT * FROM utilisateurs WHERE nom_utilisateur = ? AND mot_de_passe = ?', 
             [username, password]
         );
 
-        if (rows.length > 0) {
+        if (rows && rows.length > 0) {
             const user = rows[0];
-            // ON ENREGISTRE DANS LA SESSION
             req.session.user = {
-                id: user.id || user.Id_utilisateur, // accepte id ou Id_utilisateur
+                id: user.id || user.Id_utilisateur || 1,
                 username: user.nom_utilisateur,
-                role: user.role || 'admin' // par défaut admin si la colonne est vide
+                role: user.role || 'admin' 
             };
 
             res.json({ 
@@ -146,11 +144,10 @@ app.post('/api/login', async (req, res) => {
             res.status(401).json({ success: false, message: "Identifiants incorrects." });
         }
     } catch (err) {
-        console.error("ERREUR LOGIN DETAILLEE:", err); 
-        res.status(500).json({ success: false, message: "Erreur serveur lors de la connexion." });
+        console.error("ERREUR CRITIQUE LOGIN:", err);
+        res.status(500).json({ success: false, message: "Erreur technique : " + err.message });
     }
 });
-
 
 
 app.get('/api/logout', (req, res) => {
